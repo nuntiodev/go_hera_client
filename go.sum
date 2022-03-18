@@ -59,6 +59,10 @@ github.com/softcorp-io/block-proto v0.0.95 h1:tDPVaCOspaN/SX579gdUh2dVjq/L1OhVtG
 github.com/softcorp-io/block-proto v0.0.95/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
 github.com/softcorp-io/block-proto v0.0.100 h1:KMbCkQmxlSzZxu79oEOE/7GA7SdJ13a4xjsTsXcGT3A=
 github.com/softcorp-io/block-proto v0.0.100/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
+github.com/softcorp-io/block-proto v0.1.8 h1:VZhMAfind8jCHEW5eacYbJ1tKY5X3UwO3zsJW5vf2pc=
+github.com/softcorp-io/block-proto v0.1.8/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
+github.com/softcorp-io/block-proto v0.1.12 h1:ckbRg1d0ZMCLBUFU97OGYmY2vs16SR9wyMuzAJS3JrU=
+github.com/softcorp-io/block-proto v0.1.12/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
 github.com/softcorp-io/cloud-proto v0.1.12 h1:pQWi2enLDcXnJFpZJYa0LcSnh3vORlMdVGqjfOpmFqE=
 github.com/softcorp-io/cloud-proto v0.1.12/go.mod h1:PzVDS+Xe6A/XxA81pk78heNth/MFvPyjgm4Y9jc2uAs=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

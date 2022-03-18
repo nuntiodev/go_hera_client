@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+
 	"github.com/badoux/checkmail"
 	"github.com/softcorp-io/block-proto/go_block"
 	"github.com/softcorp-io/cloud-sdk/authorize"
@@ -65,7 +66,6 @@ func (s *defaultSocialServiceClient) Create(ctx context.Context, password string
 		createUser.Id = userOptions.Id
 		createUser.OptionalId = userOptions.OptionalId
 		createUser.Email = userOptions.Email
-		createUser.Role = userOptions.Role
 		createUser.Image = userOptions.Image
 	}
 	if metadataOptions != nil {
@@ -268,9 +268,7 @@ func (s *defaultSocialServiceClient) UpdateSecurity(ctx context.Context, findOpt
 		Id:         findOptions.Id,
 		OptionalId: findOptions.OptionalId,
 	}
-	updateUser := &go_block.User{
-		Role: securityOptions.Role,
-	}
+	updateUser := &go_block.User{}
 	userResp, err := s.userClient.UpdateSecurity(ctx, &go_block.UserRequest{
 		AccessToken:   accessToken,
 		EncryptionKey: s.encryptionKey,
