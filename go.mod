@@ -1,4 +1,4 @@
-module github.com/softcorp-io/cloud-sdk
+module github.com/softcorp-io/go-blocks
 
 go 1.17
 

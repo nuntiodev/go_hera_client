@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
-	"github.com/softcorp-io/cloud-sdk/authorize"
-	"github.com/softcorp-io/cloud-sdk/credentials_generator"
-	"github.com/softcorp-io/cloud-sdk/user_client"
+	"github.com/softcorp-io/go-blocks/authorize"
+	"github.com/softcorp-io/go-blocks/credentials_generator"
+	"github.com/softcorp-io/go-blocks/user_client"
 	"google.golang.org/grpc"
 )
 

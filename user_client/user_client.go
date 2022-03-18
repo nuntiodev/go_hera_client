@@ -7,8 +7,8 @@ import (
 
 	"github.com/badoux/checkmail"
 	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/cloud-sdk/authorize"
-	"github.com/softcorp-io/cloud-sdk/options"
+	"github.com/softcorp-io/go-blocks/authorize"
+	"github.com/softcorp-io/go-blocks/options"
 	"google.golang.org/grpc"
 )
 
