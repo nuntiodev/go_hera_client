@@ -316,7 +316,7 @@ func (s *defaultSocialServiceClient) GetAll(ctx context.Context) ([]*go_block.Us
 	if err != nil {
 		return nil, err
 	}
-	userResp, err := s.userClient.Get(ctx, &go_block.UserRequest{
+	userResp, err := s.userClient.GetAll(ctx, &go_block.UserRequest{
 		AccessToken:   accessToken,
 		EncryptionKey: s.encryptionKey,
 	})
