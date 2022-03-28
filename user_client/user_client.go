@@ -2,10 +2,10 @@ package user_client
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
+	"sync"
+	"time"
 
-	"github.com/badoux/checkmail"
 	"github.com/softcorp-io/block-proto/go_block"
 	"github.com/softcorp-io/go-blocks/authorize"
 	"github.com/softcorp-io/go-blocks/options"
@@ -17,7 +17,14 @@ var (
 	USER_API_URL          = "api.softcorp.io:443"
 	internalServerError   = errors.New("internal server error")
 	invalidFindOptionsErr = errors.New("at least one find parameter is required")
+	tokenIsEmptyErr       = errors.New("token is empty")
 )
+
+type PublicKey struct {
+	publicKey []byte
+	fetchedAt time.Time
+	sync.Mutex
+}
 
 type UserClient interface {
 	Create(ctx context.Context, password string, userOptions *options.UserOptions, metadataOptions interface{}) (*go_block.User, error)
@@ -37,7 +44,36 @@ type UserClient interface {
 type defaultSocialServiceClient struct {
 	userClient    go_block.UserServiceClient
 	authorize     authorize.Authorize
+	publicKey     *PublicKey
 	encryptionKey string
+}
+
+func (c *defaultSocialServiceClient) getPublicKey() ([]byte, error) {
+	// get public key
+	c.publicKey.Lock()
+	defer c.publicKey.Unlock()
+	if time.Now().Sub(c.publicKey.fetchedAt) < time.Hour*6 {
+		return c.publicKey.publicKey, nil
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+	accessToken, err := c.authorize.GetAccessToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	publicKeyResp, err := c.userClient.PublicKeys(context.Background(), &go_block.UserRequest{
+		CloudToken: accessToken,
+	})
+	if err != nil {
+		return nil, err
+	}
+	publicKey, ok := publicKeyResp.PublicKeys["public-jwt-key"]
+	if !ok || len(publicKey) <= 10 {
+		return nil, errors.New("could not fetch public jwt key")
+	}
+	c.publicKey.publicKey = publicKey
+	c.publicKey.fetchedAt = time.Now()
+	return publicKey, nil
 }
 
 func New(authorize authorize.Authorize, encryptionKey string, dialOptions grpc.DialOption) (UserClient, error) {
@@ -50,345 +86,7 @@ func New(authorize authorize.Authorize, encryptionKey string, dialOptions grpc.D
 	return &defaultSocialServiceClient{
 		encryptionKey: encryptionKey,
 		userClient:    userClient,
+		publicKey:     &PublicKey{},
 		authorize:     authorize,
 	}, nil
-}
-
-func (s *defaultSocialServiceClient) Create(ctx context.Context, password string, userOptions *options.UserOptions, metadataOptions interface{}) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	createUser := &go_block.User{
-		Password: password,
-	}
-	if userOptions != nil {
-		createUser.Id = userOptions.Id
-		createUser.OptionalId = userOptions.OptionalId
-		createUser.Email = userOptions.Email
-		createUser.Image = userOptions.Image
-	}
-	if metadataOptions != nil {
-		jsonMetadata, err := json.Marshal(metadataOptions)
-		if err != nil {
-			return nil, err
-		}
-		createUser.Metadata = string(jsonMetadata)
-	}
-	userResp, err := s.userClient.Create(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		User:          createUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdatePassword(ctx context.Context, findOptions *options.FindOptions, newPassword string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{
-		Password: newPassword,
-	}
-	userResp, err := s.userClient.UpdatePassword(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdateMetadata(ctx context.Context, findOptions *options.FindOptions, metadataOptions interface{}) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{}
-	if metadataOptions != nil {
-		jsonMetadata, err := json.Marshal(metadataOptions)
-		if err != nil {
-			return nil, err
-		}
-		updateUser.Metadata = string(jsonMetadata)
-	}
-	userResp, err := s.userClient.UpdateMetadata(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdateEmail(ctx context.Context, findOptions *options.FindOptions, email string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	if err := checkmail.ValidateFormat(email); err != nil && email != "" {
-		return nil, err
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{
-		Email: email,
-	}
-	userResp, err := s.userClient.UpdateEmail(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdateOptionalId(ctx context.Context, findOptions *options.FindOptions, optionalId string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{
-		OptionalId: optionalId,
-	}
-	userResp, err := s.userClient.UpdateOptionalId(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdateImage(ctx context.Context, findOptions *options.FindOptions, imageUrl string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{
-		Image: imageUrl,
-	}
-	userResp, err := s.userClient.UpdateImage(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) UpdateSecurity(ctx context.Context, findOptions *options.FindOptions, securityOptions *options.SecurityOptions) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if securityOptions == nil {
-		return nil, errors.New("security options are not allowed to be nil")
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	updateUser := &go_block.User{}
-	userResp, err := s.userClient.UpdateSecurity(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) Get(ctx context.Context, findOptions *options.FindOptions) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	getUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	userResp, err := s.userClient.Get(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-		User:          getUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.User == nil {
-		return nil, internalServerError
-	}
-	return userResp.User, nil
-}
-
-func (s *defaultSocialServiceClient) GetAll(ctx context.Context) ([]*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	userResp, err := s.userClient.GetAll(ctx, &go_block.UserRequest{
-		AccessToken:   accessToken,
-		EncryptionKey: s.encryptionKey,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if userResp == nil || userResp.Users == nil {
-		return nil, internalServerError
-	}
-	return userResp.Users, nil
-}
-
-func (s *defaultSocialServiceClient) ValidateCredentials(ctx context.Context, findOptions *options.FindOptions, password string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return nil, err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return nil, invalidFindOptionsErr
-	}
-	validateUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-		Password:   password,
-	}
-	resp, err := s.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
-		AccessToken: accessToken,
-		User:        validateUser,
-	})
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil || resp.User == nil {
-		return nil, internalServerError
-	}
-	return resp.User, nil
-}
-
-func (s *defaultSocialServiceClient) Delete(ctx context.Context, findOptions *options.FindOptions) error {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return err
-	}
-	if findOptions == nil || findOptions.Validate() == false {
-		return invalidFindOptionsErr
-	}
-	deleteUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-	}
-	_, err = s.userClient.Delete(ctx, &go_block.UserRequest{
-		AccessToken: accessToken,
-		User:        deleteUser,
-	})
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (s *defaultSocialServiceClient) DeleteAll(ctx context.Context) error {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
-	if err != nil {
-		return err
-	}
-	_, err = s.userClient.DeleteNamespace(ctx, &go_block.UserRequest{
-		AccessToken: accessToken,
-	})
-	if err != nil {
-		return err
-	}
-	return nil
 }

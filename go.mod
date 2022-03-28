@@ -4,9 +4,8 @@ go 1.17
 
 require (
 	github.com/badoux/checkmail v1.2.1
-	github.com/brianvoe/gofakeit/v6 v6.15.0
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/softcorp-io/block-proto v0.1.12
+	github.com/softcorp-io/block-proto v0.1.36
 	github.com/softcorp-io/cloud-proto v0.1.12
 	google.golang.org/grpc v1.44.0
 )
