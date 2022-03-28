@@ -37,6 +37,11 @@ type UserClient interface {
 	Get(ctx context.Context, findOptions *options.FindOptions) (*go_block.User, error)
 	GetAll(ctx context.Context) ([]*go_block.User, error)
 	ValidateCredentials(ctx context.Context, findOptions *options.FindOptions, password string) (*go_block.User, error)
+	Login(ctx context.Context, findOptions *options.FindOptions, password string) (*go_block.Token, error)
+	PublicKeys(ctx context.Context) (*go_block.Token, error)
+	RefreshToken(ctx context.Context, refreshToken string) (*go_block.Token, error)
+	ValidateToken(ctx context.Context, jwtToken string) (*go_block.User, error)
+	BlockToken(ctx context.Context, token string) error
 	Delete(ctx context.Context, findOptions *options.FindOptions) error
 	DeleteAll(ctx context.Context) error
 }
