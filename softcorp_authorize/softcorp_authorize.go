@@ -10,8 +10,6 @@ import (
 )
 
 var (
-	// ACCESS_API_URL  is the URL of the API access service backend.
-	ACCESS_API_URL = "api.softcorp.io:443"
 	// AUTHORIZE is used to override the default softcorp_authorize interface which is used to validate tokens
 	// if you don't want any authorization, set it to softcorp_authorize.AUTHORIZE = softcorp_authorize.NoAuthorization.
 	AUTHORIZE Authorize
@@ -36,12 +34,12 @@ func (a *noAuthorization) GetAccessToken(ctx context.Context) (string, error) {
 	return "", nil
 }
 
-func New(ctx context.Context, apiKey string, dialOptions grpc.DialOption) (Authorize, error) {
+func New(ctx context.Context, apiUrl string, apiKey string, dialOptions grpc.DialOption) (Authorize, error) {
 	if AUTHORIZE != nil {
 		return AUTHORIZE, nil
 	}
 	// setup grpc connection to access service
-	accessClientConn, err := grpc.Dial(ACCESS_API_URL, dialOptions)
+	accessClientConn, err := grpc.Dial(apiUrl, dialOptions)
 	if err != nil {
 		return nil, err
 	}

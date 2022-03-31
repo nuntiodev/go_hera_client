@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	// USER_API_URL is the URL of the API user service backend.
-	USER_API_URL          = "api.softcorp.io:443"
 	internalServerError   = errors.New("internal server error")
 	invalidFindOptionsErr = errors.New("at least one find parameter is required")
 	tokenIsEmptyErr       = errors.New("token is empty")
@@ -81,9 +79,9 @@ func (c *defaultSocialServiceClient) getPublicKey() ([]byte, error) {
 	return publicKey, nil
 }
 
-func New(authorize softcorp_authorize.Authorize, encryptionKey string, dialOptions grpc.DialOption) (UserClient, error) {
+func New(apiUrl string, authorize softcorp_authorize.Authorize, encryptionKey string, dialOptions grpc.DialOption) (UserClient, error) {
 	// setup grpc connection to user service
-	userClientConn, err := grpc.Dial(USER_API_URL, dialOptions)
+	userClientConn, err := grpc.Dial(apiUrl, dialOptions)
 	if err != nil {
 		return nil, err
 	}

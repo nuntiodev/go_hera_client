@@ -15,6 +15,10 @@ var (
 	ENCRYPTION_KEY = ""
 	// API_KEY  is used to connect your application to Softcorp Cloud
 	API_KEY = ""
+	// ACCESS_API_URL  is the URL of the API access service backend.
+	ACCESS_API_URL = "api.softcorp.io:443"
+	// USER_API_URL is the URL of the API user service backend.
+	USER_API_URL = "api.softcorp.io:443"
 	// STORAGE_PROVIDER is used to override the default softcorp_storage provider
 )
 
@@ -47,12 +51,12 @@ func NewClient(ctx context.Context) (*Client, error) {
 		return nil, EmptyApiKeyErr
 	}
 	// create authorization client
-	auth, err := softcorp_authorize.New(ctx, API_KEY, dialOptions)
+	auth, err := softcorp_authorize.New(ctx, ACCESS_API_URL, API_KEY, dialOptions)
 	if err != nil {
 		return nil, err
 	}
 	// create user service client
-	userClient, err := user_client.New(auth, ENCRYPTION_KEY, dialOptions)
+	userClient, err := user_client.New(USER_API_URL, auth, ENCRYPTION_KEY, dialOptions)
 	if err != nil {
 		return nil, err
 	}
