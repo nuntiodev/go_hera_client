@@ -15,6 +15,8 @@ var (
 	// AUTHORIZE is used to override the default softcorp_authorize interface which is used to validate tokens
 	// if you don't want any authorization, set it to softcorp_authorize.AUTHORIZE = softcorp_authorize.NoAuthorization.
 	AUTHORIZE Authorize
+	// NoAuthorization disables the authentication interface.
+	NoAuthorization = &noAuthorization{}
 )
 
 type Authorize interface {
@@ -28,9 +30,9 @@ type defaultSoftcorpAuthorize struct {
 	sync.Mutex
 }
 
-type NoAuthorization struct{}
+type noAuthorization struct{}
 
-func (a *NoAuthorization) GetAccessToken(ctx context.Context) (string, error) {
+func (a *noAuthorization) GetAccessToken(ctx context.Context) (string, error) {
 	return "", nil
 }
 

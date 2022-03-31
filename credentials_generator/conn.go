@@ -11,20 +11,21 @@ import (
 
 var (
 	// TRANSPORT_CREDENTIALS defines what security is passed to credentials_generator.Dial and (can be overwritten)
-	// you can provide your own, or use credentials_generator.TRANSPORT_CREDENTIALS = credentials_generator.InsecureTransportCredentials
+	// you can provide your own, or use credentials_generator.TRANSPORT_CREDENTIALS = credentials_generator.insecureTransportCredentials
 	// if you want no transport credentials (do not use this in production as nothing will get encrypted).
 	TRANSPORT_CREDENTIALS TransportCredentials
 	// API_ADDR specifies which url we should fetch certificate from if TRANSPORT_CREDENTIALS is not set
 	API_ADDR = "api.softcorp.io:443"
+	// Insecure sets transport credentisl to insecure.NewCredentials()
+	Insecure = &insecureTransportCredentials{}
 )
 
 type TransportCredentials interface {
 	GetTransportCredentials() (credentials.TransportCredentials, error)
 }
+type insecureTransportCredentials struct{}
 
-type InsecureTransportCredentials struct{}
-
-func (tc *InsecureTransportCredentials) GetTransportCredentials() (credentials.TransportCredentials, error) {
+func (tc *insecureTransportCredentials) GetTransportCredentials() (credentials.TransportCredentials, error) {
 	return insecure.NewCredentials(), nil
 }
 
