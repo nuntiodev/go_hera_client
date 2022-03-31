@@ -1,4 +1,4 @@
-package options
+package softcorp_options
 
 type UserOptions struct {
 	Id         string

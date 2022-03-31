@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/options"
+	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) UpdateMetadata(ctx context.Context, findOptions *options.FindOptions, metadataOptions interface{}) (*go_block.User, error) {
+func (s *defaultSocialServiceClient) UpdateMetadata(ctx context.Context, findOptions *softcorp_options.FindOptions, metadataOptions interface{}) (*go_block.User, error) {
 	accessToken, err := s.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err

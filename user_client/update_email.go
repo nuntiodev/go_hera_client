@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/badoux/checkmail"
 	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/options"
+	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) UpdateEmail(ctx context.Context, findOptions *options.FindOptions, email string) (*go_block.User, error) {
+func (s *defaultSocialServiceClient) UpdateEmail(ctx context.Context, findOptions *softcorp_options.FindOptions, email string) (*go_block.User, error) {
 	accessToken, err := s.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err

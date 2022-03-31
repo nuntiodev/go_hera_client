@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
-	"github.com/softcorp-io/go-blocks/authorize"
 	"github.com/softcorp-io/go-blocks/credentials_generator"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/user_client"
 	"google.golang.org/grpc"
 )
@@ -15,7 +15,7 @@ var (
 	ENCRYPTION_KEY = ""
 	// API_KEY  is used to connect your application to Softcorp Cloud
 	API_KEY = ""
-	// STORAGE_PROVIDER is used to override the default storage provider
+	// STORAGE_PROVIDER is used to override the default softcorp_storage provider
 )
 
 var (
@@ -33,7 +33,7 @@ func NewClient(ctx context.Context) (*Client, error) {
 			return nil, err
 		}
 	}
-	// get dial security options
+	// get dial security softcorp_options
 	credentialsGenerator, err := credentials_generator.New()
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func NewClient(ctx context.Context) (*Client, error) {
 		return nil, EmptyApiKeyErr
 	}
 	// create authorization client
-	auth, err := authorize.New(ctx, API_KEY, dialOptions)
+	auth, err := softcorp_authorize.New(ctx, API_KEY, dialOptions)
 	if err != nil {
 		return nil, err
 	}

@@ -3,10 +3,10 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/options"
+	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) Login(ctx context.Context, findOptions *options.FindOptions, password string) (*go_block.Token, error) {
+func (s *defaultSocialServiceClient) Login(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.Token, error) {
 	accessToken, err := s.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err

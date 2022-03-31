@@ -1,4 +1,4 @@
-package storage
+package softcorp_storage
 
 type Storage interface {
 }

@@ -1,4 +1,4 @@
-package options
+package softcorp_options
 
 type FindOptions struct {
 	Id         string
