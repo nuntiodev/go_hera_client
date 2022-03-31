@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_credentials"
 	"github.com/softcorp-io/go-blocks/user_client"
@@ -48,9 +49,11 @@ func NewClient(ctx context.Context) (*Client, error) {
 		if _, err := hex.DecodeString(ENCRYPTION_KEY); err != nil {
 			return nil, err
 		}
+	} else {
+		fmt.Println("Your encryption key is empty. If you want to secure your users data, please provide a 256 byte AES encryption key in Hex.")
 	}
 	if API_KEY == "" {
-		return nil, EmptyApiKeyErr
+		fmt.Println(EmptyApiKeyErr.Error())
 	}
 	// get dial security softcorp_options
 	credentialsGenerator, err := softcorp_credentials.New(CREDENTIALS, API_URL)
