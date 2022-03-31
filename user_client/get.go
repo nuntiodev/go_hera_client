@@ -23,6 +23,7 @@ func (s *defaultSocialServiceClient) Get(ctx context.Context, findOptions *softc
 		CloudToken:    accessToken,
 		EncryptionKey: s.encryptionKey,
 		User:          getUser,
+		Namespace:     s.namespace,
 	})
 	if err != nil {
 		return nil, err

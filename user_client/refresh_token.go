@@ -18,6 +18,7 @@ func (s *defaultSocialServiceClient) RefreshToken(ctx context.Context, refreshTo
 		Token: &go_block.Token{
 			RefreshToken: refreshToken,
 		},
+		Namespace: s.namespace,
 	})
 	if err != nil {
 		return nil, err

@@ -25,6 +25,8 @@ var (
 	// you can provide your own, or use softcorp_credentials.TRANSPORT_CREDENTIALS = softcorp_credentials.insecureTransportCredentials
 	// if you want no transport credentials (do not use this in production as nothing will get encrypted).
 	CREDENTIALS softcorp_credentials.TransportCredentials
+	// NAMESPACE defines what namespace you want to use with Softcorp Blocks (only edit this if you know what you are doing)
+	NAMESPACE = ""
 )
 
 var (
@@ -71,7 +73,7 @@ func NewClient(ctx context.Context) (*Client, error) {
 		return nil, err
 	}
 	// create user service client
-	userClient, err := user_client.New(API_URL, auth, ENCRYPTION_KEY, dialOptions)
+	userClient, err := user_client.New(API_URL, auth, ENCRYPTION_KEY, NAMESPACE, dialOptions)
 	if err != nil {
 		return nil, err
 	}

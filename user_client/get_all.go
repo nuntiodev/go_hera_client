@@ -13,6 +13,7 @@ func (s *defaultSocialServiceClient) GetAll(ctx context.Context) ([]*go_block.Us
 	userResp, err := s.userClient.GetAll(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: s.encryptionKey,
+		Namespace:     s.namespace,
 	})
 	if err != nil {
 		return nil, err

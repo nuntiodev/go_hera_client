@@ -22,6 +22,7 @@ func (s *defaultSocialServiceClient) Delete(ctx context.Context, findOptions *so
 	_, err = s.userClient.Delete(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		User:       deleteUser,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return err

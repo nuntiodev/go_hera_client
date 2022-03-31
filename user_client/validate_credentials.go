@@ -23,6 +23,7 @@ func (s *defaultSocialServiceClient) ValidateCredentials(ctx context.Context, fi
 	resp, err := s.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return nil, err

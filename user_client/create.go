@@ -32,6 +32,7 @@ func (s *defaultSocialServiceClient) Create(ctx context.Context, password string
 		CloudToken:    accessToken,
 		EncryptionKey: s.encryptionKey,
 		User:          createUser,
+		Namespace:     s.namespace,
 	})
 	if err != nil {
 		return nil, err

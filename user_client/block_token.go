@@ -23,6 +23,7 @@ func (s *defaultSocialServiceClient) BlockToken(ctx context.Context, token strin
 	resp, err := s.userClient.BlockToken(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		Token:      tokenStruct,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return err

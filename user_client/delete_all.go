@@ -12,6 +12,7 @@ func (s *defaultSocialServiceClient) DeleteAll(ctx context.Context) error {
 	}
 	_, err = s.userClient.DeleteNamespace(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return err

@@ -12,6 +12,7 @@ func (s *defaultSocialServiceClient) PublicKeys(ctx context.Context) (*go_block.
 	}
 	resp, err := s.userClient.PublicKeys(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return nil, err

@@ -48,6 +48,7 @@ type defaultSocialServiceClient struct {
 	userClient    go_block.UserServiceClient
 	authorize     softcorp_authorize.Authorize
 	publicKey     *PublicKey
+	namespace     string
 	encryptionKey string
 }
 
@@ -79,7 +80,7 @@ func (c *defaultSocialServiceClient) getPublicKey() ([]byte, error) {
 	return publicKey, nil
 }
 
-func New(apiUrl string, authorize softcorp_authorize.Authorize, encryptionKey string, dialOptions grpc.DialOption) (UserClient, error) {
+func New(apiUrl string, authorize softcorp_authorize.Authorize, encryptionKey, namespace string, dialOptions grpc.DialOption) (UserClient, error) {
 	// setup grpc connection to user service
 	userClientConn, err := grpc.Dial(apiUrl, dialOptions)
 	if err != nil {
@@ -90,6 +91,7 @@ func New(apiUrl string, authorize softcorp_authorize.Authorize, encryptionKey st
 		encryptionKey: encryptionKey,
 		userClient:    userClient,
 		publicKey:     &PublicKey{},
+		namespace:     namespace,
 		authorize:     authorize,
 	}, nil
 }

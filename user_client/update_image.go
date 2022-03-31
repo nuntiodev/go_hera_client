@@ -27,6 +27,7 @@ func (s *defaultSocialServiceClient) UpdateImage(ctx context.Context, findOption
 		EncryptionKey: s.encryptionKey,
 		Update:        updateUser,
 		User:          findUser,
+		Namespace:     s.namespace,
 	})
 	if err != nil {
 		return nil, err

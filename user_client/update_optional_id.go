@@ -27,6 +27,7 @@ func (s *defaultSocialServiceClient) UpdateOptionalId(ctx context.Context, findO
 		EncryptionKey: s.encryptionKey,
 		Update:        updateUser,
 		User:          findUser,
+		Namespace:     s.namespace,
 	})
 	if err != nil {
 		return nil, err

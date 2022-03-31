@@ -23,6 +23,7 @@ func (s *defaultSocialServiceClient) Login(ctx context.Context, findOptions *sof
 	resp, err := s.userClient.Login(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
+		Namespace:  s.namespace,
 	})
 	if err != nil {
 		return nil, err
