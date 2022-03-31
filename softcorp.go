@@ -4,8 +4,8 @@ import (
 	"context"
 	"encoding/hex"
 	"errors"
-	"github.com/softcorp-io/go-blocks/credentials_generator"
 	"github.com/softcorp-io/go-blocks/softcorp_authorize"
+	"github.com/softcorp-io/go-blocks/softcorp_credentials"
 	"github.com/softcorp-io/go-blocks/user_client"
 	"google.golang.org/grpc"
 )
@@ -15,10 +15,22 @@ var (
 	ENCRYPTION_KEY = ""
 	// API_KEY  is used to connect your application to Softcorp Cloud
 	API_KEY = ""
-	// ACCESS_API_URL  is the URL of the API access service backend.
-	ACCESS_API_URL = "api.softcorp.io:443"
-	// USER_API_URL is the URL of the API user service backend.
-	USER_API_URL = "api.softcorp.io:443"
+	// API_URL  is the URL the SDK will try to connect to
+	API_URL = "api.softcorp.io:443"
+	// AUTHORIZE is used to override the default softcorp_authorize interface which is used to validate tokens
+	// if you don't want any authorization, set it to softcorp_authorize.AUTHORIZE = softcorp_authorize.NoAuthorization.
+	AUTHORIZE softcorp_authorize.Authorize
+	// CREDENTIALS defines what security is passed to softcorp_credentials.Dial and (can be overwritten)
+	// you can provide your own, or use softcorp_credentials.TRANSPORT_CREDENTIALS = softcorp_credentials.insecureTransportCredentials
+	// if you want no transport credentials (do not use this in production as nothing will get encrypted).
+	CREDENTIALS softcorp_credentials.TransportCredentials
+)
+
+var (
+	// NoAuthorization disables the authentication interface.
+	NoAuthorization = &softcorp_authorize.NoAuthorization{}
+	// Insecure sets transport gRPC credentials to insecure.NewCredentials()
+	Insecure = &softcorp_credentials.InsecureTransportCredentials{}
 	// STORAGE_PROVIDER is used to override the default softcorp_storage provider
 )
 
@@ -38,11 +50,11 @@ func NewClient(ctx context.Context) (*Client, error) {
 		}
 	}
 	// get dial security softcorp_options
-	credentialsGenerator, err := credentials_generator.New()
+	credentialsGenerator, err := softcorp_credentials.New(CREDENTIALS)
 	if err != nil {
 		return nil, err
 	}
-	credentials, err := credentialsGenerator.GetTransportCredentials()
+	credentials, err := credentialsGenerator.GetTransportCredentials(API_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -51,12 +63,12 @@ func NewClient(ctx context.Context) (*Client, error) {
 		return nil, EmptyApiKeyErr
 	}
 	// create authorization client
-	auth, err := softcorp_authorize.New(ctx, ACCESS_API_URL, API_KEY, dialOptions)
+	auth, err := softcorp_authorize.New(ctx, API_URL, API_KEY, AUTHORIZE, dialOptions)
 	if err != nil {
 		return nil, err
 	}
 	// create user service client
-	userClient, err := user_client.New(USER_API_URL, auth, ENCRYPTION_KEY, dialOptions)
+	userClient, err := user_client.New(API_URL, auth, ENCRYPTION_KEY, dialOptions)
 	if err != nil {
 		return nil, err
 	}

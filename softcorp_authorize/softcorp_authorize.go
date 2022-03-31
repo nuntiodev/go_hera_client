@@ -9,14 +9,6 @@ import (
 	"sync"
 )
 
-var (
-	// AUTHORIZE is used to override the default softcorp_authorize interface which is used to validate tokens
-	// if you don't want any authorization, set it to softcorp_authorize.AUTHORIZE = softcorp_authorize.NoAuthorization.
-	AUTHORIZE Authorize
-	// NoAuthorization disables the authentication interface.
-	NoAuthorization = &noAuthorization{}
-)
-
 type Authorize interface {
 	GetAccessToken(ctx context.Context) (string, error)
 }
@@ -28,15 +20,15 @@ type defaultSoftcorpAuthorize struct {
 	sync.Mutex
 }
 
-type noAuthorization struct{}
+type NoAuthorization struct{}
 
-func (a *noAuthorization) GetAccessToken(ctx context.Context) (string, error) {
+func (a *NoAuthorization) GetAccessToken(ctx context.Context) (string, error) {
 	return "", nil
 }
 
-func New(ctx context.Context, apiUrl string, apiKey string, dialOptions grpc.DialOption) (Authorize, error) {
-	if AUTHORIZE != nil {
-		return AUTHORIZE, nil
+func New(ctx context.Context, apiUrl string, apiKey string, authorize Authorize, dialOptions grpc.DialOption) (Authorize, error) {
+	if authorize != nil {
+		return authorize, nil
 	}
 	// setup grpc connection to access service
 	accessClientConn, err := grpc.Dial(apiUrl, dialOptions)
