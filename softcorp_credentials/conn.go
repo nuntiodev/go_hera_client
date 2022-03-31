@@ -10,7 +10,7 @@ import (
 )
 
 type TransportCredentials interface {
-	GetTransportCredentials(api string) (credentials.TransportCredentials, error)
+	GetTransportCredentials() (credentials.TransportCredentials, error)
 }
 type InsecureTransportCredentials struct{}
 
@@ -18,17 +18,21 @@ func (tc *InsecureTransportCredentials) GetTransportCredentials() (credentials.T
 	return insecure.NewCredentials(), nil
 }
 
-type defaultTransportCredentials struct{}
+type defaultTransportCredentials struct {
+	apiUrl string
+}
 
-func New(transportCredentials TransportCredentials) (TransportCredentials, error) {
+func New(transportCredentials TransportCredentials, apiUrl string) (TransportCredentials, error) {
 	if transportCredentials != nil {
 		return transportCredentials, nil
 	}
-	return &defaultTransportCredentials{}, nil
+	return &defaultTransportCredentials{
+		apiUrl: apiUrl,
+	}, nil
 }
 
-func (tc *defaultTransportCredentials) GetTransportCredentials(api string) (credentials.TransportCredentials, error) {
-	conn, err := tls.Dial("tcp", api, &tls.Config{})
+func (tc *defaultTransportCredentials) GetTransportCredentials() (credentials.TransportCredentials, error) {
+	conn, err := tls.Dial("tcp", tc.apiUrl, &tls.Config{})
 	if err != nil {
 		return nil, err
 	}

@@ -43,25 +43,25 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context) (*Client, error) {
-	// check if encryption key is valid hex
+	// check if encryption and api key is valid hex
 	if ENCRYPTION_KEY != "" {
 		if _, err := hex.DecodeString(ENCRYPTION_KEY); err != nil {
 			return nil, err
 		}
 	}
+	if API_KEY == "" {
+		return nil, EmptyApiKeyErr
+	}
 	// get dial security softcorp_options
-	credentialsGenerator, err := softcorp_credentials.New(CREDENTIALS)
+	credentialsGenerator, err := softcorp_credentials.New(CREDENTIALS, API_URL)
 	if err != nil {
 		return nil, err
 	}
-	credentials, err := credentialsGenerator.GetTransportCredentials(API_URL)
+	credentials, err := credentialsGenerator.GetTransportCredentials()
 	if err != nil {
 		return nil, err
 	}
 	dialOptions := grpc.WithTransportCredentials(credentials)
-	if API_KEY == "" {
-		return nil, EmptyApiKeyErr
-	}
 	// create authorization client
 	auth, err := softcorp_authorize.New(ctx, API_URL, API_KEY, AUTHORIZE, dialOptions)
 	if err != nil {
