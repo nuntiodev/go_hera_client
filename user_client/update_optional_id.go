@@ -3,31 +3,43 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) UpdateOptionalId(ctx context.Context, findOptions *softcorp_options.FindOptions, optionalId string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type UpdateOptionalIdUserRequest struct {
+	// external required fields
+	optionalId  string
+	findOptions *softcorp_options.FindOptions
+	// internal required fields
+	encryptionKey string
+	namespace     string
+	userClient    go_block.UserServiceClient
+	authorize     softcorp_authorize.Authorize
+}
+
+func (r *UpdateOptionalIdUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if findOptions == nil || findOptions.Validate() == false {
+	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
 	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
+		Email:      r.findOptions.Email,
+		Id:         r.findOptions.Id,
+		OptionalId: r.findOptions.OptionalId,
 	}
 	updateUser := &go_block.User{
-		OptionalId: optionalId,
+		Image: r.optionalId,
 	}
-	userResp, err := s.userClient.UpdateOptionalId(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.UpdateOptionalId(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
-		EncryptionKey: s.encryptionKey,
+		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,
 		User:          findUser,
-		Namespace:     s.namespace,
+		Namespace:     r.namespace,
 	})
 	if err != nil {
 		return nil, err
@@ -36,4 +48,15 @@ func (s *defaultSocialServiceClient) UpdateOptionalId(ctx context.Context, findO
 		return nil, internalServerError
 	}
 	return userResp.User, nil
+}
+
+func (s *defaultSocialServiceClient) UpdateOptionalId(findOptions *softcorp_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest {
+	return &UpdateOptionalIdUserRequest{
+		optionalId:    optionalId,
+		findOptions:   findOptions,
+		encryptionKey: s.encryptionKey,
+		namespace:     s.namespace,
+		userClient:    s.userClient,
+		authorize:     s.authorize,
+	}
 }

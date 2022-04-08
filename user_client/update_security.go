@@ -4,32 +4,43 @@ import (
 	"context"
 	"errors"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) UpdateSecurity(ctx context.Context, findOptions *softcorp_options.FindOptions, securityOptions *softcorp_options.SecurityOptions) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type UpdateSecurityUserRequest struct {
+	// external required fields
+	findOptions *softcorp_options.FindOptions
+	// internal required fields
+	encryptionKey string
+	namespace     string
+	userClient    go_block.UserServiceClient
+	authorize     softcorp_authorize.Authorize
+}
+
+func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+	if r.encryptionKey == "" {
+		return nil, errors.New("missing required encryption key used to update security")
+	}
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if securityOptions == nil {
-		return nil, errors.New("security softcorp_options are not allowed to be nil")
-	}
-	if findOptions == nil || findOptions.Validate() == false {
+	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
 	findUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
+		Email:      r.findOptions.Email,
+		Id:         r.findOptions.Id,
+		OptionalId: r.findOptions.OptionalId,
 	}
 	updateUser := &go_block.User{}
-	userResp, err := s.userClient.UpdateSecurity(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.UpdateSecurity(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
-		EncryptionKey: s.encryptionKey,
+		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,
 		User:          findUser,
-		Namespace:     s.namespace,
+		Namespace:     r.namespace,
 	})
 	if err != nil {
 		return nil, err
@@ -38,4 +49,14 @@ func (s *defaultSocialServiceClient) UpdateSecurity(ctx context.Context, findOpt
 		return nil, internalServerError
 	}
 	return userResp.User, nil
+}
+
+func (s *defaultSocialServiceClient) UpdateSecurity(findOptions *softcorp_options.FindOptions) *UpdateSecurityUserRequest {
+	return &UpdateSecurityUserRequest{
+		findOptions:   findOptions,
+		encryptionKey: s.encryptionKey,
+		namespace:     s.namespace,
+		userClient:    s.userClient,
+		authorize:     s.authorize,
+	}
 }

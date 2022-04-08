@@ -3,17 +3,26 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 )
 
-func (s *defaultSocialServiceClient) GetAll(ctx context.Context) ([]*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type GetAllUserRequest struct {
+	// internal required fields
+	namespace     string
+	encryptionKey string
+	userClient    go_block.UserServiceClient
+	authorize     softcorp_authorize.Authorize
+}
+
+func (r *GetAllUserRequest) Execute(ctx context.Context) ([]*go_block.User, error) {
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	userResp, err := s.userClient.GetAll(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.GetAll(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
-		EncryptionKey: s.encryptionKey,
-		Namespace:     s.namespace,
+		EncryptionKey: r.encryptionKey,
+		Namespace:     r.namespace,
 	})
 	if err != nil {
 		return nil, err
@@ -22,4 +31,13 @@ func (s *defaultSocialServiceClient) GetAll(ctx context.Context) ([]*go_block.Us
 		return nil, internalServerError
 	}
 	return userResp.Users, nil
+}
+
+func (s *defaultSocialServiceClient) GetAll() *GetAllUserRequest {
+	return &GetAllUserRequest{
+		encryptionKey: s.encryptionKey,
+		namespace:     s.namespace,
+		userClient:    s.userClient,
+		authorize:     s.authorize,
+	}
 }

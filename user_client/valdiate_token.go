@@ -1,13 +1,13 @@
 package user_client
 
 import (
-	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
 	"github.com/softcorp-io/block-proto/go_block"
 )
 
-func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string) (*go_block.User, error) {
+// ValidateToken locally validates the JWT and returns a user with the corresponding user id
+func (s *defaultSocialServiceClient) ValidateToken(jwtToken string) (*go_block.User, error) {
 	if jwtToken == "" {
 		return nil, tokenIsEmptyErr
 	}

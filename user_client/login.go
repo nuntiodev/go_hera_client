@@ -3,27 +3,44 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) Login(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.Token, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type LoginUserRequest struct {
+	// external required fields
+	findOptions *softcorp_options.FindOptions
+	// external optional fields
+	password string
+	// internal required fields
+	namespace  string
+	userClient go_block.UserServiceClient
+	authorize  softcorp_authorize.Authorize
+}
+
+func (r *LoginUserRequest) SetPassword(password string) *LoginUserRequest {
+	r.password = password
+	return r
+}
+
+func (r *LoginUserRequest) Execute(ctx context.Context) (*go_block.Token, error) {
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if findOptions == nil || findOptions.Validate() == false {
+	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
 	validateUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-		Password:   password,
+		Email:      r.findOptions.Email,
+		Id:         r.findOptions.Id,
+		OptionalId: r.findOptions.OptionalId,
+		Password:   r.password,
 	}
-	resp, err := s.userClient.Login(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.Login(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
-		Namespace:  s.namespace,
+		Namespace:  r.namespace,
 	})
 	if err != nil {
 		return nil, err
@@ -32,4 +49,13 @@ func (s *defaultSocialServiceClient) Login(ctx context.Context, findOptions *sof
 		return nil, internalServerError
 	}
 	return resp.Token, nil
+}
+
+func (s *defaultSocialServiceClient) Login(findOptions *softcorp_options.FindOptions) *LoginUserRequest {
+	return &LoginUserRequest{
+		findOptions: findOptions,
+		namespace:   s.namespace,
+		userClient:  s.userClient,
+		authorize:   s.authorize,
+	}
 }

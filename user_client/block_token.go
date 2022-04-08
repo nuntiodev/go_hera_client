@@ -3,27 +3,33 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 )
 
-func (s *defaultSocialServiceClient) BlockToken(ctx context.Context, token string) error {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type BlockTokenUserRequest struct {
+	// external required fields
+	token string
+	// internal required fields
+	namespace  string
+	userClient go_block.UserServiceClient
+	authorize  softcorp_authorize.Authorize
+}
+
+func (r *BlockTokenUserRequest) Execute(ctx context.Context) error {
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return err
 	}
-	if token == "" {
+	if r.token == "" {
 		return tokenIsEmptyErr
 	}
-	// when blocking a token the server does not distinguish
-	// between whether it is a access or refresh token - it just blocks it,
-	// so it does not matter whether we set the access or refresh token - just one of them
 	tokenStruct := &go_block.Token{
-		AccessToken:  token,
-		RefreshToken: token,
+		TokenPointer: r.token,
 	}
-	resp, err := s.userClient.BlockToken(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.BlockToken(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		Token:      tokenStruct,
-		Namespace:  s.namespace,
+		Namespace:  r.namespace,
 	})
 	if err != nil {
 		return err
@@ -32,4 +38,13 @@ func (s *defaultSocialServiceClient) BlockToken(ctx context.Context, token strin
 		return internalServerError
 	}
 	return nil
+}
+
+func (s *defaultSocialServiceClient) BlockToken(token string) *BlockTokenUserRequest {
+	return &BlockTokenUserRequest{
+		token:      token,
+		namespace:  s.namespace,
+		userClient: s.userClient,
+		authorize:  s.authorize,
+	}
 }

@@ -2,15 +2,16 @@ package user_client
 
 import (
 	"context"
-	"github.com/badoux/checkmail"
+	"encoding/json"
 	"github.com/softcorp-io/block-proto/go_block"
 	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-type UpdateEmailUserRequest struct {
+type UpdateMetadataUserRequest struct {
+	// external optional fields
+	metadata interface{}
 	// external required fields
-	email       string
 	findOptions *softcorp_options.FindOptions
 	// internal required fields
 	encryptionKey string
@@ -19,7 +20,12 @@ type UpdateEmailUserRequest struct {
 	authorize     softcorp_authorize.Authorize
 }
 
-func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *UpdateMetadataUserRequest) SetMetadata(metadata interface{}) *UpdateMetadataUserRequest {
+	r.metadata = metadata
+	return r
+}
+
+func (r *UpdateMetadataUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -27,18 +33,22 @@ func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	if err := checkmail.ValidateFormat(r.email); err != nil && r.email != "" {
-		return nil, err
-	}
 	findUser := &go_block.User{
 		Email:      r.findOptions.Email,
 		Id:         r.findOptions.Id,
 		OptionalId: r.findOptions.OptionalId,
 	}
-	updateUser := &go_block.User{
-		Email: r.email,
+	updateUser := &go_block.User{}
+	if r.metadata != nil {
+		jsonMetadata, err := json.Marshal(r.metadata)
+		if err != nil {
+			return nil, err
+		}
+		updateUser.Metadata = string(jsonMetadata)
+	} else {
+		r.metadata = ""
 	}
-	userResp, err := r.userClient.UpdateEmail(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.UpdateMetadata(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,
@@ -54,9 +64,8 @@ func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateEmail(findOptions *softcorp_options.FindOptions, email string) *UpdateEmailUserRequest {
-	return &UpdateEmailUserRequest{
-		email:         email,
+func (s *defaultSocialServiceClient) UpdateMetadata(findOptions *softcorp_options.FindOptions) *UpdateMetadataUserRequest {
+	return &UpdateMetadataUserRequest{
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,
 		namespace:     s.namespace,

@@ -25,23 +25,23 @@ type PublicKey struct {
 }
 
 type UserClient interface {
-	Create(ctx context.Context, password string, userOptions *softcorp_options.UserOptions, metadataOptions interface{}) (*go_block.User, error)
-	UpdatePassword(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.User, error)
-	UpdateMetadata(ctx context.Context, findOptions *softcorp_options.FindOptions, metadataOptions interface{}) (*go_block.User, error)
-	UpdateEmail(ctx context.Context, findOptions *softcorp_options.FindOptions, email string) (*go_block.User, error)
-	UpdateOptionalId(ctx context.Context, findOptions *softcorp_options.FindOptions, optionalId string) (*go_block.User, error)
-	UpdateImage(ctx context.Context, findOptions *softcorp_options.FindOptions, imageUrl string) (*go_block.User, error)
-	UpdateSecurity(ctx context.Context, findOptions *softcorp_options.FindOptions, securityOptions *softcorp_options.SecurityOptions) (*go_block.User, error)
-	Get(ctx context.Context, findOptions *softcorp_options.FindOptions) (*go_block.User, error)
-	GetAll(ctx context.Context) ([]*go_block.User, error)
-	ValidateCredentials(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.User, error)
-	Login(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.Token, error)
-	PublicKeys(ctx context.Context) (*go_block.Token, error)
-	RefreshToken(ctx context.Context, refreshToken string) (*go_block.Token, error)
-	ValidateToken(ctx context.Context, jwtToken string) (*go_block.User, error)
-	BlockToken(ctx context.Context, token string) error
-	Delete(ctx context.Context, findOptions *softcorp_options.FindOptions) error
-	DeleteAll(ctx context.Context) error
+	Create() *CreateUserRequest
+	UpdatePassword(findOptions *softcorp_options.FindOptions, password string) *UpdatePasswordUserRequest
+	UpdateMetadata(findOptions *softcorp_options.FindOptions) *UpdateMetadataUserRequest
+	UpdateEmail(findOptions *softcorp_options.FindOptions, email string) *UpdateEmailUserRequest
+	UpdateOptionalId(findOptions *softcorp_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest
+	UpdateImage(findOptions *softcorp_options.FindOptions, image string) *UpdateImageUserRequest
+	UpdateSecurity(findOptions *softcorp_options.FindOptions) *UpdateSecurityUserRequest
+	Get(findOptions *softcorp_options.FindOptions) *GetUserRequest
+	GetAll() *GetAllUserRequest
+	ValidateCredentials(findOptions *softcorp_options.FindOptions, password string) *ValidateCredentialsUserRequest
+	Login(findOptions *softcorp_options.FindOptions) *LoginUserRequest
+	PublicKeys() *PublicKeysUserRequest
+	RefreshToken(refreshToken string) *RefreshTokenUserRequest
+	ValidateToken(jwtToken string) (*go_block.User, error)
+	BlockToken(token string) *BlockTokenUserRequest
+	Delete(findOptions *softcorp_options.FindOptions) *DeleteUserRequest
+	DeleteAll() *DeleteAllUserRequest
 }
 
 type defaultSocialServiceClient struct {

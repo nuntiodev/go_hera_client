@@ -3,27 +3,40 @@ package user_client
 import (
 	"context"
 	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/softcorp-io/go-blocks/softcorp_authorize"
 	"github.com/softcorp-io/go-blocks/softcorp_options"
 )
 
-func (s *defaultSocialServiceClient) ValidateCredentials(ctx context.Context, findOptions *softcorp_options.FindOptions, password string) (*go_block.User, error) {
-	accessToken, err := s.authorize.GetAccessToken(ctx)
+type ValidateCredentialsUserRequest struct {
+	// external required fields
+	password    string
+	findOptions *softcorp_options.FindOptions
+	// internal required fields
+	encryptionKey string
+	namespace     string
+	userClient    go_block.UserServiceClient
+	authorize     softcorp_authorize.Authorize
+}
+
+func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if findOptions == nil || findOptions.Validate() == false {
+	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
 	validateUser := &go_block.User{
-		Email:      findOptions.Email,
-		Id:         findOptions.Id,
-		OptionalId: findOptions.OptionalId,
-		Password:   password,
+		Email:      r.findOptions.Email,
+		Id:         r.findOptions.Id,
+		OptionalId: r.findOptions.OptionalId,
+		Password:   r.password,
 	}
-	resp, err := s.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
-		CloudToken: accessToken,
-		User:       validateUser,
-		Namespace:  s.namespace,
+	resp, err := r.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
+		CloudToken:    accessToken,
+		User:          validateUser,
+		Namespace:     r.namespace,
+		EncryptionKey: r.encryptionKey,
 	})
 	if err != nil {
 		return nil, err
@@ -32,4 +45,15 @@ func (s *defaultSocialServiceClient) ValidateCredentials(ctx context.Context, fi
 		return nil, internalServerError
 	}
 	return resp.User, nil
+}
+
+func (s *defaultSocialServiceClient) ValidateCredentials(findOptions *softcorp_options.FindOptions, password string) *ValidateCredentialsUserRequest {
+	return &ValidateCredentialsUserRequest{
+		password:      password,
+		findOptions:   findOptions,
+		encryptionKey: s.encryptionKey,
+		namespace:     s.namespace,
+		userClient:    s.userClient,
+		authorize:     s.authorize,
+	}
 }
