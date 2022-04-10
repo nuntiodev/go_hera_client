@@ -13,7 +13,7 @@ type PublicKeysUserRequest struct {
 	authorize  softcorp_authorize.Authorize
 }
 
-func (r *PublicKeysUserRequest) Execute(ctx context.Context) (*map[string][]byte, error) {
+func (r *PublicKeysUserRequest) Execute(ctx context.Context) (*map[string]string, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err

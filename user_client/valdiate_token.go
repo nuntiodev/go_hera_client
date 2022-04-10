@@ -15,7 +15,7 @@ func (s *defaultSocialServiceClient) ValidateToken(jwtToken string) (*go_block.U
 	if err != nil {
 		return nil, err
 	}
-	key, err := jwt.ParseRSAPublicKeyFromPEM(jwtPublicKey)
+	key, err := jwt.ParseRSAPublicKeyFromPEM([]byte(jwtPublicKey))
 	if err != nil {
 		return nil, err
 	}

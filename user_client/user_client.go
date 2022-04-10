@@ -19,7 +19,7 @@ var (
 )
 
 type PublicKey struct {
-	publicKey []byte
+	publicKey string
 	fetchedAt time.Time
 	sync.Mutex
 }
@@ -52,7 +52,7 @@ type defaultSocialServiceClient struct {
 	encryptionKey string
 }
 
-func (c *defaultSocialServiceClient) getPublicKey() ([]byte, error) {
+func (c *defaultSocialServiceClient) getPublicKey() (string, error) {
 	// get public key
 	c.publicKey.Lock()
 	defer c.publicKey.Unlock()
@@ -63,17 +63,17 @@ func (c *defaultSocialServiceClient) getPublicKey() ([]byte, error) {
 	defer cancel()
 	accessToken, err := c.authorize.GetAccessToken(ctx)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	publicKeyResp, err := c.userClient.PublicKeys(context.Background(), &go_block.UserRequest{
 		CloudToken: accessToken,
 	})
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	publicKey, ok := publicKeyResp.PublicKeys["public-jwt-key"]
 	if !ok || len(publicKey) <= 10 {
-		return nil, errors.New("could not fetch public jwt key")
+		return "", errors.New("could not fetch public jwt key")
 	}
 	c.publicKey.publicKey = publicKey
 	c.publicKey.fetchedAt = time.Now()

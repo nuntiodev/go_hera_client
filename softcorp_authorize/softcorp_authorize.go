@@ -14,9 +14,9 @@ type Authorize interface {
 }
 
 type defaultSoftcorpAuthorize struct {
-	secretKeyJwt *jwt.Token
-	authTokenJwt *jwt.Token
-	accessApi    go_cloud.ProjectServiceClient
+	apiKeyJwt   *jwt.Token
+	accessToken *jwt.Token
+	accessApi   go_cloud.ProjectServiceClient
 	sync.Mutex
 }
 
@@ -47,33 +47,33 @@ func New(ctx context.Context, apiUrl string, apiKey string, authorize Authorize,
 		return nil, errors.New("could not initialize access token")
 	}
 	// create jwt
-	secretKeyJwt, _ := jwt.Parse(apiKey, nil)
-	if secretKeyJwt == nil || secretKeyJwt.Claims == nil {
+	apiKeyJwt, _ := jwt.Parse(apiKey, nil)
+	if apiKeyJwt == nil || apiKeyJwt.Claims == nil {
 		return nil, errors.New("invalid secret key")
 	}
-	if err := secretKeyJwt.Claims.Valid(); err != nil {
+	if err := apiKeyJwt.Claims.Valid(); err != nil {
 		return nil, err
 	}
-	authTokenJwt, _ := jwt.Parse(accessResp.AccessToken, nil)
-	if err := authTokenJwt.Claims.Valid(); err != nil {
+	accessToken, _ := jwt.Parse(accessResp.AccessToken, nil)
+	if err := accessToken.Claims.Valid(); err != nil {
 		return nil, err
 	}
-	if authTokenJwt == nil || authTokenJwt.Claims == nil {
+	if accessToken == nil || accessToken.Claims == nil {
 		return nil, errors.New("invalid auth token")
 	}
 	return &defaultSoftcorpAuthorize{
-		accessApi:    accessApi,
-		secretKeyJwt: secretKeyJwt,
-		authTokenJwt: authTokenJwt,
+		accessApi:   accessApi,
+		apiKeyJwt:   apiKeyJwt,
+		accessToken: accessToken,
 	}, nil
 }
 
 func (sa *defaultSoftcorpAuthorize) GetAccessToken(ctx context.Context) (string, error) {
 	sa.Lock()
 	defer sa.Unlock()
-	if err := sa.authTokenJwt.Claims.Valid(); err != nil {
+	if err := sa.accessToken.Claims.Valid(); err != nil {
 		accessResp, err := sa.accessApi.GenerateAccessToken(ctx, &go_cloud.ProjectRequest{
-			PrivateKey: sa.secretKeyJwt.Raw,
+			PrivateKey: sa.apiKeyJwt.Raw,
 		})
 		if err != nil {
 			return "", err
@@ -85,7 +85,7 @@ func (sa *defaultSoftcorpAuthorize) GetAccessToken(ctx context.Context) (string,
 		if err := authTokenJwt.Claims.Valid(); err != nil {
 			return "", err
 		}
-		sa.authTokenJwt = authTokenJwt
+		sa.accessToken = authTokenJwt
 	}
-	return sa.authTokenJwt.Raw, nil
+	return sa.accessToken.Raw, nil
 }

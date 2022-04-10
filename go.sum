@@ -53,6 +53,8 @@ github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/softcorp-io/block-proto v0.1.51 h1:zqDtmDq4N4dGWtbEWU0kpv0ji9rSpCbos5L31Dac8K8=
 github.com/softcorp-io/block-proto v0.1.51/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
+github.com/softcorp-io/block-proto v0.1.55 h1:mqJElK76oPwcVJnz2CwyuzEYeqWJ0D8F2Jyrkg76sRU=
+github.com/softcorp-io/block-proto v0.1.55/go.mod h1:llMRfOdxCqyrB8gYWQafAkK4BzDZXhmsm9rHw54nbOs=
 github.com/softcorp-io/cloud-proto v0.1.12 h1:pQWi2enLDcXnJFpZJYa0LcSnh3vORlMdVGqjfOpmFqE=
 github.com/softcorp-io/cloud-proto v0.1.12/go.mod h1:PzVDS+Xe6A/XxA81pk78heNth/MFvPyjgm4Y9jc2uAs=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=

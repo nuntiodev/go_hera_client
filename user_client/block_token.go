@@ -23,13 +23,10 @@ func (r *BlockTokenUserRequest) Execute(ctx context.Context) error {
 	if r.token == "" {
 		return tokenIsEmptyErr
 	}
-	tokenStruct := &go_block.Token{
-		TokenPointer: r.token,
-	}
 	resp, err := r.userClient.BlockToken(ctx, &go_block.UserRequest{
-		CloudToken: accessToken,
-		Token:      tokenStruct,
-		Namespace:  r.namespace,
+		CloudToken:   accessToken,
+		Namespace:    r.namespace,
+		TokenPointer: r.token,
 	})
 	if err != nil {
 		return err
