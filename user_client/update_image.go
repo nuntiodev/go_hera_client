@@ -2,20 +2,20 @@ package user_client
 
 import (
 	"context"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type UpdateImageUserRequest struct {
 	// external required fields
 	image       string
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	encryptionKey string
 	namespace     string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
 func (r *UpdateImageUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
@@ -50,7 +50,7 @@ func (r *UpdateImageUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateImage(findOptions *softcorp_options.FindOptions, image string) *UpdateImageUserRequest {
+func (s *defaultSocialServiceClient) UpdateImage(findOptions *nuntio_options.FindOptions, image string) *UpdateImageUserRequest {
 	return &UpdateImageUserRequest{
 		image:         image,
 		findOptions:   findOptions,

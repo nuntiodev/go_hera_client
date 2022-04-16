@@ -1,4 +1,4 @@
-package softcorp_storage
+package nuntio_storage
 
 type Storage interface {
 }

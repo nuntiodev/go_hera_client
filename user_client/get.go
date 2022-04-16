@@ -2,19 +2,19 @@ package user_client
 
 import (
 	"context"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type GetUserRequest struct {
 	// external required fields
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	namespace     string
 	encryptionKey string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
 func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
@@ -45,7 +45,7 @@ func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) Get(findOptions *softcorp_options.FindOptions) *GetUserRequest {
+func (s *defaultSocialServiceClient) Get(findOptions *nuntio_options.FindOptions) *GetUserRequest {
 	return &GetUserRequest{
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,

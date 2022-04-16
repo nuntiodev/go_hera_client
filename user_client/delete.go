@@ -2,18 +2,18 @@ package user_client
 
 import (
 	"context"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type DeleteUserRequest struct {
 	// external required fields
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	namespace  string
 	userClient go_block.UserServiceClient
-	authorize  softcorp_authorize.Authorize
+	authorize  nuntio_authorize.Authorize
 }
 
 func (r *DeleteUserRequest) Execute(ctx context.Context) error {
@@ -39,7 +39,7 @@ func (r *DeleteUserRequest) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (s *defaultSocialServiceClient) Delete(findOptions *softcorp_options.FindOptions) *DeleteUserRequest {
+func (s *defaultSocialServiceClient) Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest {
 	return &DeleteUserRequest{
 		findOptions: findOptions,
 		namespace:   s.namespace,

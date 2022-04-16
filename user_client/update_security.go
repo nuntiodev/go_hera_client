@@ -3,19 +3,19 @@ package user_client
 import (
 	"context"
 	"errors"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type UpdateSecurityUserRequest struct {
 	// external required fields
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	encryptionKey string
 	namespace     string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
 func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
@@ -51,7 +51,7 @@ func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateSecurity(findOptions *softcorp_options.FindOptions) *UpdateSecurityUserRequest {
+func (s *defaultSocialServiceClient) UpdateSecurity(findOptions *nuntio_options.FindOptions) *UpdateSecurityUserRequest {
 	return &UpdateSecurityUserRequest{
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,

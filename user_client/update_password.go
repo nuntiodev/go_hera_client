@@ -2,9 +2,9 @@ package user_client
 
 import (
 	"context"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type UpdatePasswordUserRequest struct {
@@ -12,12 +12,12 @@ type UpdatePasswordUserRequest struct {
 	validatePassword bool
 	// external required fields
 	password    string
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	encryptionKey string
 	namespace     string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
 func (r *UpdatePasswordUserRequest) SetValidatePassword(validatePassword bool) *UpdatePasswordUserRequest {
@@ -58,7 +58,7 @@ func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_block.User
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdatePassword(findOptions *softcorp_options.FindOptions, password string) *UpdatePasswordUserRequest {
+func (s *defaultSocialServiceClient) UpdatePassword(findOptions *nuntio_options.FindOptions, password string) *UpdatePasswordUserRequest {
 	return &UpdatePasswordUserRequest{
 		password:      password,
 		findOptions:   findOptions,

@@ -1,4 +1,4 @@
-package softcorp_options
+package nuntio_options
 
 type SecurityOptions struct {
 	EncryptionKey string

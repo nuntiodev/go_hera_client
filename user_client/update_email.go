@@ -3,20 +3,20 @@ package user_client
 import (
 	"context"
 	"github.com/badoux/checkmail"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type UpdateEmailUserRequest struct {
 	// external required fields
 	email       string
-	findOptions *softcorp_options.FindOptions
+	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	encryptionKey string
 	namespace     string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
 func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
@@ -54,7 +54,7 @@ func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateEmail(findOptions *softcorp_options.FindOptions, email string) *UpdateEmailUserRequest {
+func (s *defaultSocialServiceClient) UpdateEmail(findOptions *nuntio_options.FindOptions, email string) *UpdateEmailUserRequest {
 	return &UpdateEmailUserRequest{
 		email:         email,
 		findOptions:   findOptions,

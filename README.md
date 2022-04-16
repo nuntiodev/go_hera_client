@@ -1,2 +1,2 @@
 # go-blocks
-A Golang SDK for the Softcorp Blocks. Goto our [docs](https://softcorp.io/docs/blocks) to read more.
+A Golang SDK for Nuntio Block APIs. Goto our [docs](https://docs.nuntio.io) to read more.

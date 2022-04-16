@@ -1,10 +1,10 @@
-package softcorp_authorize
+package nuntio_authorize
 
 import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
-	"github.com/softcorp-io/cloud-proto/go_cloud"
+	"github.com/nuntiodev/cloud-proto/go_cloud"
 	"google.golang.org/grpc"
 	"sync"
 )
@@ -13,7 +13,7 @@ type Authorize interface {
 	GetAccessToken(ctx context.Context) (string, error)
 }
 
-type defaultSoftcorpAuthorize struct {
+type defaultAuthorize struct {
 	apiKeyJwt   *jwt.Token
 	accessToken *jwt.Token
 	accessApi   go_cloud.ProjectServiceClient
@@ -61,14 +61,14 @@ func New(ctx context.Context, apiUrl string, apiKey string, authorize Authorize,
 	if accessToken == nil || accessToken.Claims == nil {
 		return nil, errors.New("invalid auth token")
 	}
-	return &defaultSoftcorpAuthorize{
+	return &defaultAuthorize{
 		accessApi:   accessApi,
 		apiKeyJwt:   apiKeyJwt,
 		accessToken: accessToken,
 	}, nil
 }
 
-func (sa *defaultSoftcorpAuthorize) GetAccessToken(ctx context.Context) (string, error) {
+func (sa *defaultAuthorize) GetAccessToken(ctx context.Context) (string, error) {
 	sa.Lock()
 	defer sa.Unlock()
 	if err := sa.accessToken.Claims.Valid(); err != nil {

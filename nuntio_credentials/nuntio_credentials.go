@@ -1,4 +1,4 @@
-package softcorp_credentials
+package nuntio_credentials
 
 import (
 	"bytes"

@@ -3,7 +3,7 @@ package user_client
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
-	"github.com/softcorp-io/block-proto/go_block"
+	"github.com/nuntiodev/block-proto/go_block"
 )
 
 // ValidateToken locally validates the JWT and returns a user with the corresponding user id

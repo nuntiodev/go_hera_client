@@ -1,12 +1,12 @@
-module github.com/softcorp-io/go-blocks
+module github.com/nuntiodev/go-blocks
 
 go 1.17
 
 require (
 	github.com/badoux/checkmail v1.2.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/softcorp-io/block-proto v0.1.55
-	github.com/softcorp-io/cloud-proto v0.1.12
+	github.com/nuntiodev/block-proto v0.1.58
+	github.com/nuntiodev/cloud-proto v0.1.13
 	google.golang.org/grpc v1.44.0
 )
 

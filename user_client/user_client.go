@@ -6,9 +6,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 	"google.golang.org/grpc"
 )
 
@@ -26,27 +26,27 @@ type PublicKey struct {
 
 type UserClient interface {
 	Create() *CreateUserRequest
-	UpdatePassword(findOptions *softcorp_options.FindOptions, password string) *UpdatePasswordUserRequest
-	UpdateMetadata(findOptions *softcorp_options.FindOptions) *UpdateMetadataUserRequest
-	UpdateEmail(findOptions *softcorp_options.FindOptions, email string) *UpdateEmailUserRequest
-	UpdateOptionalId(findOptions *softcorp_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest
-	UpdateImage(findOptions *softcorp_options.FindOptions, image string) *UpdateImageUserRequest
-	UpdateSecurity(findOptions *softcorp_options.FindOptions) *UpdateSecurityUserRequest
-	Get(findOptions *softcorp_options.FindOptions) *GetUserRequest
+	UpdatePassword(findOptions *nuntio_options.FindOptions, password string) *UpdatePasswordUserRequest
+	UpdateMetadata(findOptions *nuntio_options.FindOptions) *UpdateMetadataUserRequest
+	UpdateEmail(findOptions *nuntio_options.FindOptions, email string) *UpdateEmailUserRequest
+	UpdateOptionalId(findOptions *nuntio_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest
+	UpdateImage(findOptions *nuntio_options.FindOptions, image string) *UpdateImageUserRequest
+	UpdateSecurity(findOptions *nuntio_options.FindOptions) *UpdateSecurityUserRequest
+	Get(findOptions *nuntio_options.FindOptions) *GetUserRequest
 	GetAll() *GetAllUserRequest
-	ValidateCredentials(findOptions *softcorp_options.FindOptions, password string) *ValidateCredentialsUserRequest
-	Login(findOptions *softcorp_options.FindOptions) *LoginUserRequest
+	ValidateCredentials(findOptions *nuntio_options.FindOptions, password string) *ValidateCredentialsUserRequest
+	Login(findOptions *nuntio_options.FindOptions) *LoginUserRequest
 	PublicKeys() *PublicKeysUserRequest
 	RefreshToken(refreshToken string) *RefreshTokenUserRequest
 	ValidateToken(jwtToken string) (*go_block.User, error)
 	BlockToken(token string) *BlockTokenUserRequest
-	Delete(findOptions *softcorp_options.FindOptions) *DeleteUserRequest
+	Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest
 	DeleteAll() *DeleteAllUserRequest
 }
 
 type defaultSocialServiceClient struct {
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 	publicKey     *PublicKey
 	namespace     string
 	encryptionKey string
@@ -80,7 +80,7 @@ func (c *defaultSocialServiceClient) getPublicKey() (string, error) {
 	return publicKey, nil
 }
 
-func New(apiUrl string, authorize softcorp_authorize.Authorize, encryptionKey, namespace string, dialOptions grpc.DialOption) (UserClient, error) {
+func New(apiUrl string, authorize nuntio_authorize.Authorize, encryptionKey, namespace string, dialOptions grpc.DialOption) (UserClient, error) {
 	// setup grpc connection to user service
 	userClientConn, err := grpc.Dial(apiUrl, dialOptions)
 	if err != nil {

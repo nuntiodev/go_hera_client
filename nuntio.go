@@ -1,40 +1,40 @@
-package softcorp
+package nuntio
 
 import (
 	"context"
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_credentials"
-	"github.com/softcorp-io/go-blocks/user_client"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_credentials"
+	"github.com/nuntiodev/go-blocks/user_client"
 	"google.golang.org/grpc"
 )
 
 var (
 	// ENCRYPTION_KEY  is used to encrypt clients data under the given key
 	ENCRYPTION_KEY = ""
-	// API_KEY  is used to connect your application to Softcorp Cloud
+	// API_KEY  is used to connect your application to Nuntio Cloud
 	API_KEY = ""
 	// API_URL  is the URL the SDK will try to connect to
-	API_URL = "api.softcorp.io:443"
-	// AUTHORIZE is used to override the default softcorp_authorize interface which is used to validate tokens
-	// if you don't want any authorization, set it to softcorp_authorize.AUTHORIZE = softcorp_authorize.NoAuthorization.
-	AUTHORIZE softcorp_authorize.Authorize
-	// CREDENTIALS defines what security is passed to softcorp_credentials.Dial and (can be overwritten)
-	// you can provide your own, or use softcorp_credentials.TRANSPORT_CREDENTIALS = softcorp_credentials.insecureTransportCredentials
+	API_URL = "api.nuntio.io:443"
+	// AUTHORIZE is used to override the default nuntio_authorize interface which is used to validate tokens
+	// if you don't want any authorization, set it to nuntio_authorize.AUTHORIZE = nuntio_authorize.NoAuthorization.
+	AUTHORIZE nuntio_authorize.Authorize
+	// CREDENTIALS defines what security is passed to nuntio_credentials.Dial and (can be overwritten)
+	// you can provide your own, or use nuntio_credentials.TRANSPORT_CREDENTIALS = nuntio_credentials.insecureTransportCredentials
 	// if you want no transport credentials (do not use this in production as nothing will get encrypted).
-	CREDENTIALS softcorp_credentials.TransportCredentials
-	// NAMESPACE defines what namespace you want to use with Softcorp Blocks (only edit this if you know what you are doing)
+	CREDENTIALS nuntio_credentials.TransportCredentials
+	// NAMESPACE defines what namespace you want to use with Nuntio Blocks (only edit this if you know what you are doing)
 	NAMESPACE = ""
 )
 
 var (
 	// NoAuthorization disables the authentication interface.
-	NoAuthorization = &softcorp_authorize.NoAuthorization{}
+	NoAuthorization = &nuntio_authorize.NoAuthorization{}
 	// Insecure sets transport gRPC credentials to insecure.NewCredentials()
-	Insecure = &softcorp_credentials.InsecureTransportCredentials{}
-	// STORAGE_PROVIDER is used to override the default softcorp_storage provider
+	Insecure = &nuntio_credentials.InsecureTransportCredentials{}
+	// STORAGE_PROVIDER is used to override the default nuntio_storage provider
 )
 
 var (
@@ -57,8 +57,8 @@ func NewClient(ctx context.Context) (*Client, error) {
 	if API_KEY == "" {
 		fmt.Println(EmptyApiKeyErr.Error())
 	}
-	// get dial security softcorp_options
-	credentialsGenerator, err := softcorp_credentials.New(CREDENTIALS, API_URL)
+	// get dial security nuntio_options
+	credentialsGenerator, err := nuntio_credentials.New(CREDENTIALS, API_URL)
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +68,7 @@ func NewClient(ctx context.Context) (*Client, error) {
 	}
 	dialOptions := grpc.WithTransportCredentials(credentials)
 	// create authorization client
-	auth, err := softcorp_authorize.New(ctx, API_URL, API_KEY, AUTHORIZE, dialOptions)
+	auth, err := nuntio_authorize.New(ctx, API_URL, API_KEY, AUTHORIZE, dialOptions)
 	if err != nil {
 		return nil, err
 	}

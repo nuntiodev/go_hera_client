@@ -3,14 +3,14 @@ package user_client
 import (
 	"context"
 	"encoding/json"
-	"github.com/softcorp-io/block-proto/go_block"
-	"github.com/softcorp-io/go-blocks/softcorp_authorize"
-	"github.com/softcorp-io/go-blocks/softcorp_options"
+	"github.com/nuntiodev/block-proto/go_block"
+	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
 type CreateUserRequest struct {
 	// external optional fields
-	userOptions      *softcorp_options.UserOptions
+	userOptions      *nuntio_options.UserOptions
 	metadata         interface{}
 	password         string
 	validatePassword bool
@@ -18,10 +18,10 @@ type CreateUserRequest struct {
 	encryptionKey string
 	namespace     string
 	userClient    go_block.UserServiceClient
-	authorize     softcorp_authorize.Authorize
+	authorize     nuntio_authorize.Authorize
 }
 
-func (r *CreateUserRequest) SetUserOptions(options *softcorp_options.UserOptions) *CreateUserRequest {
+func (r *CreateUserRequest) SetUserOptions(options *nuntio_options.UserOptions) *CreateUserRequest {
 	if options != nil {
 		r.userOptions = options
 	}
