@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"github.com/nuntiodev/go-blocks/nuntio_authorize"
 	"github.com/nuntiodev/go-blocks/nuntio_credentials"
-	"github.com/nuntiodev/go-blocks/user_client"
+	"github.com/nuntiodev/go-blocks/user_block"
 	"google.golang.org/grpc"
 )
 
@@ -42,7 +42,7 @@ var (
 )
 
 type Client struct {
-	UserClient user_client.UserClient
+	UserBlock user_block.UserBlock
 }
 
 func NewClient(ctx context.Context) (*Client, error) {
@@ -73,11 +73,11 @@ func NewClient(ctx context.Context) (*Client, error) {
 		return nil, err
 	}
 	// create user service client
-	userClient, err := user_client.New(API_URL, auth, ENCRYPTION_KEY, NAMESPACE, dialOptions)
+	userBlock, err := user_block.New(API_URL, auth, ENCRYPTION_KEY, NAMESPACE, dialOptions)
 	if err != nil {
 		return nil, err
 	}
 	return &Client{
-		UserClient: userClient,
+		UserBlock: userBlock,
 	}, nil
 }

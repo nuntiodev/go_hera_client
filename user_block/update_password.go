@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"context"
@@ -7,17 +7,25 @@ import (
 	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
-type GetUserRequest struct {
+type UpdatePasswordUserRequest struct {
+	// external optional fields
+	validatePassword bool
 	// external required fields
+	password    string
 	findOptions *nuntio_options.FindOptions
 	// internal required fields
-	namespace     string
 	encryptionKey string
+	namespace     string
 	userClient    go_block.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *UpdatePasswordUserRequest) SetValidatePassword(validatePassword bool) *UpdatePasswordUserRequest {
+	r.validatePassword = validatePassword
+	return r
+}
+
+func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -25,16 +33,21 @@ func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	getUser := &go_block.User{
+	findUser := &go_block.User{
 		Email:      r.findOptions.Email,
 		Id:         r.findOptions.Id,
 		OptionalId: r.findOptions.OptionalId,
 	}
-	userResp, err := r.userClient.Get(ctx, &go_block.UserRequest{
-		CloudToken:    accessToken,
-		EncryptionKey: r.encryptionKey,
-		User:          getUser,
-		Namespace:     r.namespace,
+	updateUser := &go_block.User{
+		Password: r.password,
+	}
+	userResp, err := r.userClient.UpdatePassword(ctx, &go_block.UserRequest{
+		CloudToken:       accessToken,
+		EncryptionKey:    r.encryptionKey,
+		Update:           updateUser,
+		User:             findUser,
+		Namespace:        r.namespace,
+		ValidatePassword: r.validatePassword,
 	})
 	if err != nil {
 		return nil, err
@@ -45,8 +58,9 @@ func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) Get(findOptions *nuntio_options.FindOptions) *GetUserRequest {
-	return &GetUserRequest{
+func (s *defaultSocialServiceClient) UpdatePassword(findOptions *nuntio_options.FindOptions, password string) *UpdatePasswordUserRequest {
+	return &UpdatePasswordUserRequest{
+		password:      password,
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,
 		namespace:     s.namespace,

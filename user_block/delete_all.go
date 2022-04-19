@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"context"
@@ -6,30 +6,30 @@ import (
 	"github.com/nuntiodev/go-blocks/nuntio_authorize"
 )
 
-type PublicKeysUserRequest struct {
+type DeleteAllUserRequest struct {
 	// internal required fields
 	namespace  string
 	userClient go_block.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
-func (r *PublicKeysUserRequest) Execute(ctx context.Context) (*map[string]string, error) {
+func (r *DeleteAllUserRequest) Execute(ctx context.Context) error {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	resp, err := r.userClient.PublicKeys(ctx, &go_block.UserRequest{
+	_, err = r.userClient.DeleteNamespace(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
 		Namespace:  r.namespace,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return &resp.PublicKeys, nil
+	return nil
 }
 
-func (s *defaultSocialServiceClient) PublicKeys() *PublicKeysUserRequest {
-	return &PublicKeysUserRequest{
+func (s *defaultSocialServiceClient) DeleteAll() *DeleteAllUserRequest {
+	return &DeleteAllUserRequest{
 		namespace:  s.namespace,
 		userClient: s.userClient,
 		authorize:  s.authorize,

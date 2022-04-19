@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"context"
@@ -7,40 +7,52 @@ import (
 	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
-type DeleteUserRequest struct {
+type LoginUserRequest struct {
 	// external required fields
 	findOptions *nuntio_options.FindOptions
+	// external optional fields
+	password string
 	// internal required fields
 	namespace  string
 	userClient go_block.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
-func (r *DeleteUserRequest) Execute(ctx context.Context) error {
+func (r *LoginUserRequest) SetPassword(password string) *LoginUserRequest {
+	r.password = password
+	return r
+}
+
+func (r *LoginUserRequest) Execute(ctx context.Context) (*go_block.Token, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if r.findOptions == nil || r.findOptions.Validate() == false {
-		return invalidFindOptionsErr
+		return nil, invalidFindOptionsErr
 	}
-	deleteUser := &go_block.User{
+	validateUser := &go_block.User{
 		Email:      r.findOptions.Email,
 		Id:         r.findOptions.Id,
 		OptionalId: r.findOptions.OptionalId,
+		Password:   r.password,
 	}
-	if _, err = r.userClient.Delete(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.Login(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
-		User:       deleteUser,
+		User:       validateUser,
 		Namespace:  r.namespace,
-	}); err != nil {
-		return err
+	})
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	if resp == nil || resp.Token == nil {
+		return nil, internalServerError
+	}
+	return resp.Token, nil
 }
 
-func (s *defaultSocialServiceClient) Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest {
-	return &DeleteUserRequest{
+func (s *defaultSocialServiceClient) Login(findOptions *nuntio_options.FindOptions) *LoginUserRequest {
+	return &LoginUserRequest{
 		findOptions: findOptions,
 		namespace:   s.namespace,
 		userClient:  s.userClient,

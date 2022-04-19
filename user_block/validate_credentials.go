@@ -1,16 +1,15 @@
-package user_client
+package user_block
 
 import (
 	"context"
-	"github.com/badoux/checkmail"
 	"github.com/nuntiodev/block-proto/go_block"
 	"github.com/nuntiodev/go-blocks/nuntio_authorize"
 	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
-type UpdateEmailUserRequest struct {
+type ValidateCredentialsUserRequest struct {
 	// external required fields
-	email       string
+	password    string
 	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	encryptionKey string
@@ -19,7 +18,7 @@ type UpdateEmailUserRequest struct {
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -27,36 +26,30 @@ func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	if err := checkmail.ValidateFormat(r.email); err != nil && r.email != "" {
-		return nil, err
-	}
-	findUser := &go_block.User{
+	validateUser := &go_block.User{
 		Email:      r.findOptions.Email,
 		Id:         r.findOptions.Id,
 		OptionalId: r.findOptions.OptionalId,
+		Password:   r.password,
 	}
-	updateUser := &go_block.User{
-		Email: r.email,
-	}
-	userResp, err := r.userClient.UpdateEmail(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
-		EncryptionKey: r.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
+		User:          validateUser,
 		Namespace:     r.namespace,
+		EncryptionKey: r.encryptionKey,
 	})
 	if err != nil {
 		return nil, err
 	}
-	if userResp == nil || userResp.User == nil {
+	if resp == nil || resp.User == nil {
 		return nil, internalServerError
 	}
-	return userResp.User, nil
+	return resp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateEmail(findOptions *nuntio_options.FindOptions, email string) *UpdateEmailUserRequest {
-	return &UpdateEmailUserRequest{
-		email:         email,
+func (s *defaultSocialServiceClient) ValidateCredentials(findOptions *nuntio_options.FindOptions, password string) *ValidateCredentialsUserRequest {
+	return &ValidateCredentialsUserRequest{
+		password:      password,
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,
 		namespace:     s.namespace,

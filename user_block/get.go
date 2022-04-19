@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"context"
@@ -7,18 +7,17 @@ import (
 	"github.com/nuntiodev/go-blocks/nuntio_options"
 )
 
-type UpdateOptionalIdUserRequest struct {
+type GetUserRequest struct {
 	// external required fields
-	optionalId  string
 	findOptions *nuntio_options.FindOptions
 	// internal required fields
-	encryptionKey string
 	namespace     string
+	encryptionKey string
 	userClient    go_block.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *UpdateOptionalIdUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -26,19 +25,15 @@ func (r *UpdateOptionalIdUserRequest) Execute(ctx context.Context) (*go_block.Us
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	findUser := &go_block.User{
+	getUser := &go_block.User{
 		Email:      r.findOptions.Email,
 		Id:         r.findOptions.Id,
 		OptionalId: r.findOptions.OptionalId,
 	}
-	updateUser := &go_block.User{
-		Image: r.optionalId,
-	}
-	userResp, err := r.userClient.UpdateOptionalId(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.Get(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
-		Update:        updateUser,
-		User:          findUser,
+		User:          getUser,
 		Namespace:     r.namespace,
 	})
 	if err != nil {
@@ -50,9 +45,8 @@ func (r *UpdateOptionalIdUserRequest) Execute(ctx context.Context) (*go_block.Us
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) UpdateOptionalId(findOptions *nuntio_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest {
-	return &UpdateOptionalIdUserRequest{
-		optionalId:    optionalId,
+func (s *defaultSocialServiceClient) Get(findOptions *nuntio_options.FindOptions) *GetUserRequest {
+	return &GetUserRequest{
 		findOptions:   findOptions,
 		encryptionKey: s.encryptionKey,
 		namespace:     s.namespace,

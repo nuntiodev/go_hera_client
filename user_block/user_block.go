@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"context"
@@ -24,7 +24,7 @@ type PublicKey struct {
 	sync.Mutex
 }
 
-type UserClient interface {
+type UserBlock interface {
 	Create() *CreateUserRequest
 	UpdatePassword(findOptions *nuntio_options.FindOptions, password string) *UpdatePasswordUserRequest
 	UpdateMetadata(findOptions *nuntio_options.FindOptions) *UpdateMetadataUserRequest
@@ -80,7 +80,7 @@ func (c *defaultSocialServiceClient) getPublicKey() (string, error) {
 	return publicKey, nil
 }
 
-func New(apiUrl string, authorize nuntio_authorize.Authorize, encryptionKey, namespace string, dialOptions grpc.DialOption) (UserClient, error) {
+func New(apiUrl string, authorize nuntio_authorize.Authorize, encryptionKey, namespace string, dialOptions grpc.DialOption) (UserBlock, error) {
 	// setup grpc connection to user service
 	userClientConn, err := grpc.Dial(apiUrl, dialOptions)
 	if err != nil {

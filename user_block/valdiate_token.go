@@ -1,4 +1,4 @@
-package user_client
+package user_block
 
 import (
 	"errors"
