@@ -8,8 +8,8 @@ import (
 )
 
 // ValidateToken locally validates the JWT and returns a user with the corresponding user id
-func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string, validateServerSide bool) (*go_block.User, error) {
-	if validateServerSide {
+func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_block.User, error) {
+	if forceValidateServerSide {
 		resp, err := s.userClient.ValidateToken(ctx, &go_block.UserRequest{
 			TokenPointer: jwtToken,
 		})

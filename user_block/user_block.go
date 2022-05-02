@@ -38,7 +38,7 @@ type UserBlock interface {
 	Login(findOptions *nuntio_options.FindOptions) *LoginUserRequest
 	PublicKeys() *PublicKeysUserRequest
 	RefreshToken(refreshToken string) *RefreshTokenUserRequest
-	ValidateToken(jwtToken string) (*go_block.User, error)
+	ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_block.User, error)
 	BlockToken(token string) *BlockTokenUserRequest
 	Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest
 	DeleteAll() *DeleteAllUserRequest
