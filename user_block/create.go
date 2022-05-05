@@ -71,11 +71,10 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_block.User, error)
 		createUser.Metadata = string(jsonMetadata)
 	}
 	userResp, err := r.userClient.Create(ctx, &go_block.UserRequest{
-		CloudToken:       accessToken,
-		EncryptionKey:    r.encryptionKey,
-		User:             createUser,
-		Namespace:        r.namespace,
-		ValidatePassword: r.validatePassword,
+		CloudToken:    accessToken,
+		EncryptionKey: r.encryptionKey,
+		User:          createUser,
+		Namespace:     r.namespace,
 	})
 	if err != nil {
 		return nil, err

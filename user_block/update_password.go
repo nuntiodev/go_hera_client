@@ -42,12 +42,11 @@ func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_block.User
 		Password: r.password,
 	}
 	userResp, err := r.userClient.UpdatePassword(ctx, &go_block.UserRequest{
-		CloudToken:       accessToken,
-		EncryptionKey:    r.encryptionKey,
-		Update:           updateUser,
-		User:             findUser,
-		Namespace:        r.namespace,
-		ValidatePassword: r.validatePassword,
+		CloudToken:    accessToken,
+		EncryptionKey: r.encryptionKey,
+		Update:        updateUser,
+		User:          findUser,
+		Namespace:     r.namespace,
 	})
 	if err != nil {
 		return nil, err
