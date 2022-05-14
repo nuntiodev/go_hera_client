@@ -27,9 +27,9 @@ func (r *UpdateImageUserRequest) Execute(ctx context.Context) (*go_block.User, e
 		return nil, invalidFindOptionsErr
 	}
 	findUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
 	}
 	updateUser := &go_block.User{
 		Image: r.image,

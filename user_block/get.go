@@ -26,9 +26,9 @@ func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 		return nil, invalidFindOptionsErr
 	}
 	getUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
 	}
 	userResp, err := r.userClient.Get(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,

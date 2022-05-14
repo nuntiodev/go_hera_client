@@ -5,7 +5,7 @@ go 1.18
 require (
 	github.com/badoux/checkmail v1.2.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/nuntiodev/block-proto v0.2.18
+	github.com/nuntiodev/block-proto v0.2.60
 	github.com/nuntiodev/cloud-proto v0.1.13
 	google.golang.org/grpc v1.44.0
 )

@@ -29,7 +29,7 @@ type UserBlock interface {
 	UpdatePassword(findOptions *nuntio_options.FindOptions, password string) *UpdatePasswordUserRequest
 	UpdateMetadata(findOptions *nuntio_options.FindOptions) *UpdateMetadataUserRequest
 	UpdateEmail(findOptions *nuntio_options.FindOptions, email string) *UpdateEmailUserRequest
-	UpdateOptionalId(findOptions *nuntio_options.FindOptions, optionalId string) *UpdateOptionalIdUserRequest
+	UpdateUsername(findOptions *nuntio_options.FindOptions, optionalId string) *UpdateUsernameUserRequest
 	UpdateImage(findOptions *nuntio_options.FindOptions, image string) *UpdateImageUserRequest
 	UpdateSecurity(findOptions *nuntio_options.FindOptions) *UpdateSecurityUserRequest
 	Get(findOptions *nuntio_options.FindOptions) *GetUserRequest

@@ -30,9 +30,9 @@ func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User
 		return nil, invalidFindOptionsErr
 	}
 	findUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
 	}
 	updateUser := &go_block.User{}
 	userResp, err := r.userClient.UpdateSecurity(ctx, &go_block.UserRequest{

@@ -34,9 +34,9 @@ func (r *UpdateMetadataUserRequest) Execute(ctx context.Context) (*go_block.User
 		return nil, invalidFindOptionsErr
 	}
 	findUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
 	}
 	updateUser := &go_block.User{}
 	if r.metadata != nil {

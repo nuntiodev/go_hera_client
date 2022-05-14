@@ -27,10 +27,10 @@ func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) (*go_block
 		return nil, invalidFindOptionsErr
 	}
 	validateUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
-		Password:   r.password,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
+		Password: r.password,
 	}
 	resp, err := r.userClient.ValidateCredentials(ctx, &go_block.UserRequest{
 		CloudToken:    accessToken,

@@ -59,7 +59,7 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_block.User, error)
 	}
 	if r.userOptions != nil {
 		createUser.Id = r.userOptions.Id
-		createUser.OptionalId = r.userOptions.OptionalId
+		createUser.Username = r.userOptions.Username
 		createUser.Email = r.userOptions.Email
 		createUser.Image = r.userOptions.Image
 	}

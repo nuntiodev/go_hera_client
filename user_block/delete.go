@@ -25,9 +25,9 @@ func (r *DeleteUserRequest) Execute(ctx context.Context) error {
 		return invalidFindOptionsErr
 	}
 	deleteUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
 	}
 	if _, err = r.userClient.Delete(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,

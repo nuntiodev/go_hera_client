@@ -32,10 +32,10 @@ func (r *LoginUserRequest) Execute(ctx context.Context) (*go_block.Token, error)
 		return nil, invalidFindOptionsErr
 	}
 	validateUser := &go_block.User{
-		Email:      r.findOptions.Email,
-		Id:         r.findOptions.Id,
-		OptionalId: r.findOptions.OptionalId,
-		Password:   r.password,
+		Email:    r.findOptions.Email,
+		Id:       r.findOptions.Id,
+		Username: r.findOptions.Username,
+		Password: r.password,
 	}
 	resp, err := r.userClient.Login(ctx, &go_block.UserRequest{
 		CloudToken: accessToken,
