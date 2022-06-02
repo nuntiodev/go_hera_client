@@ -64,10 +64,14 @@ github.com/nuntiodev/block-proto v0.2.18 h1:aqoXJ5At2f5VsRlIa7YH89HKWe2Zu1TE2lbL
 github.com/nuntiodev/block-proto v0.2.18/go.mod h1:KkqHw6hbsrjCLSbe1/WvqBHGEiZ1bl3qCGgc4xQnYXU=
 github.com/nuntiodev/block-proto v0.2.60 h1:BVuaI4hhgvc2FLTCWBBJEtcOAgfMurU53ihr9EoOk9I=
 github.com/nuntiodev/block-proto v0.2.60/go.mod h1:KkqHw6hbsrjCLSbe1/WvqBHGEiZ1bl3qCGgc4xQnYXU=
+github.com/nuntiodev/block-proto v0.2.61 h1:oS8NiYom2FWtQ/HWBn+GFcAPl8DD41P95RTviMlEo+g=
+github.com/nuntiodev/block-proto v0.2.61/go.mod h1:KkqHw6hbsrjCLSbe1/WvqBHGEiZ1bl3qCGgc4xQnYXU=
 github.com/nuntiodev/cloud-proto v0.1.12 h1:pQWi2enLDcXnJFpZJYa0LcSnh3vORlMdVGqjfOpmFqE=
 github.com/nuntiodev/cloud-proto v0.1.12/go.mod h1:PzVDS+Xe6A/XxA81pk78heNth/MFvPyjgm4Y9jc2uAs=
 github.com/nuntiodev/cloud-proto v0.1.13 h1:NetNFI9xipOt9VUmIi4ARhCHohMmLEFWqLnFpDIuvfE=
 github.com/nuntiodev/cloud-proto v0.1.13/go.mod h1:K3cw8KnPqldIsRrb3szK654ECjqgURgH08L2/SdSRCg=
+github.com/nuntiodev/cloud-proto v0.1.31 h1:6rV96H6K8Ic7uOv+jKizCOiAlgyQnN2Lhj5qh/hBbpU=
+github.com/nuntiodev/cloud-proto v0.1.31/go.mod h1:K3cw8KnPqldIsRrb3szK654ECjqgURgH08L2/SdSRCg=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=

@@ -16,7 +16,7 @@ type Authorize interface {
 type defaultAuthorize struct {
 	apiKeyJwt   *jwt.Token
 	accessToken *jwt.Token
-	accessApi   go_cloud.ProjectServiceClient
+	accessApi   go_cloud.CloudServiceClient
 	sync.Mutex
 }
 
@@ -35,9 +35,9 @@ func New(ctx context.Context, apiUrl string, apiKey string, authorize Authorize,
 	if err != nil {
 		return nil, err
 	}
-	accessApi := go_cloud.NewProjectServiceClient(accessClientConn)
+	accessApi := go_cloud.NewCloudServiceClient(accessClientConn)
 	// setup access auth token
-	accessResp, err := accessApi.GenerateAccessToken(ctx, &go_cloud.ProjectRequest{
+	accessResp, err := accessApi.GenerateAccessToken(ctx, &go_cloud.CloudRequest{
 		PrivateKey: apiKey,
 	})
 	if err != nil {
@@ -72,7 +72,7 @@ func (sa *defaultAuthorize) GetAccessToken(ctx context.Context) (string, error) 
 	sa.Lock()
 	defer sa.Unlock()
 	if err := sa.accessToken.Claims.Valid(); err != nil {
-		accessResp, err := sa.accessApi.GenerateAccessToken(ctx, &go_cloud.ProjectRequest{
+		accessResp, err := sa.accessApi.GenerateAccessToken(ctx, &go_cloud.CloudRequest{
 			PrivateKey: sa.apiKeyJwt.Raw,
 		})
 		if err != nil {
