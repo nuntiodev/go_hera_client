@@ -1,26 +1,25 @@
-package user_block
+package api_client
 
 import (
 	"context"
 	"encoding/json"
+	"github.com/nuntiodev/go-hera/hera_options"
 	"github.com/nuntiodev/go-hera/nuntio_authorize"
-	"github.com/nuntiodev/go-hera/nuntio_options"
+	"github.com/nuntiodev/hera-proto/go_hera"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type CreateUserRequest struct {
-	// external optional fields
-	userOptions      *nuntio_options.UserOptions
+	userOptions      *hera_options.UserOptions
 	metadata         interface{}
 	password         string
 	validatePassword bool
-	// internal required fields
-	encryptionKey string
-	namespace     string
-	userClient    go_hera.UserServiceClient
-	authorize     nuntio_authorize.Authorize
+	namespace        string
+	client           go_hera.ServiceClient
+	authorize        nuntio_authorize.Authorize
 }
 
-func (r *CreateUserRequest) SetUserOptions(options *nuntio_options.UserOptions) *CreateUserRequest {
+func (r *CreateUserRequest) SetUserOptions(options *hera_options.UserOptions) *CreateUserRequest {
 	if options != nil {
 		r.userOptions = options
 	}
@@ -41,13 +40,6 @@ func (r *CreateUserRequest) SetPassword(password string) *CreateUserRequest {
 	return r
 }
 
-func (r *CreateUserRequest) SetValidatePassword(validatePassword bool) *CreateUserRequest {
-	if validatePassword {
-		r.validatePassword = validatePassword
-	}
-	return r
-}
-
 func (r *CreateUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
@@ -61,6 +53,11 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_hera.User, error) 
 		createUser.Username = r.userOptions.Username
 		createUser.Email = r.userOptions.Email
 		createUser.Image = r.userOptions.Image
+		createUser.Phone = r.userOptions.Phone
+		createUser.FirstName = r.userOptions.FirstName
+		createUser.LastName = r.userOptions.LastName
+		createUser.Birthdate = timestamppb.New(r.userOptions.Birthdate)
+		createUser.Image = r.userOptions.Image
 	}
 	if r.metadata != nil {
 		jsonMetadata, err := json.Marshal(r.metadata)
@@ -69,11 +66,10 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_hera.User, error) 
 		}
 		createUser.Metadata = string(jsonMetadata)
 	}
-	userResp, err := r.userClient.Create(ctx, &go_hera.UserRequest{
-		CloudToken:    accessToken,
-		EncryptionKey: r.encryptionKey,
-		User:          createUser,
-		Namespace:     r.namespace,
+	userResp, err := r.client.CreateUser(ctx, &go_hera.HeraRequest{
+		CloudToken: accessToken,
+		User:       createUser,
+		Namespace:  r.namespace,
 	})
 	if err != nil {
 		return nil, err
@@ -84,11 +80,10 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_hera.User, error) 
 	return userResp.User, nil
 }
 
-func (s *defaultSocialServiceClient) Create() *CreateUserRequest {
+func (a *apiClient) CreateUser() *CreateUserRequest {
 	return &CreateUserRequest{
-		encryptionKey: s.encryptionKey,
-		namespace:     s.namespace,
-		userClient:    s.userClient,
-		authorize:     s.authorize,
+		namespace: a.namespace,
+		client:    a.client,
+		authorize: a.authorize,
 	}
 }

@@ -1,17 +1,16 @@
-package user_block
+package api_client
 
 import (
 	"context"
 	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/hera-proto/go_hera"
 )
 
 type RefreshTokenUserRequest struct {
-	// external required fields
 	refreshToken string
-	// internal required fields
-	namespace  string
-	userClient go_hera.UserServiceClient
-	authorize  nuntio_authorize.Authorize
+	namespace    string
+	client       go_hera.ServiceClient
+	authorize    nuntio_authorize.Authorize
 }
 
 func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_hera.Token, error) {
@@ -22,7 +21,7 @@ func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_hera.Token, 
 	if r.refreshToken == "" {
 		return nil, tokenIsEmptyErr
 	}
-	resp, err := r.userClient.RefreshToken(ctx, &go_hera.UserRequest{
+	resp, err := r.client.RefreshToken(ctx, &go_hera.HeraRequest{
 		CloudToken: accessToken,
 		Token: &go_hera.Token{
 			RefreshToken: r.refreshToken,
@@ -38,11 +37,11 @@ func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_hera.Token, 
 	return resp.Token, nil
 }
 
-func (s *defaultSocialServiceClient) RefreshToken(refreshToken string) *RefreshTokenUserRequest {
+func (a *apiClient) RefreshToken(refreshToken string) *RefreshTokenUserRequest {
 	return &RefreshTokenUserRequest{
 		refreshToken: refreshToken,
-		namespace:    s.namespace,
-		userClient:   s.userClient,
-		authorize:    s.authorize,
+		namespace:    a.namespace,
+		client:       a.client,
+		authorize:    a.authorize,
 	}
 }

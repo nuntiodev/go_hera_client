@@ -1,18 +1,17 @@
-package user_block
+package api_client
 
 import (
 	"context"
+	"github.com/nuntiodev/go-hera/hera_options"
 	"github.com/nuntiodev/go-hera/nuntio_authorize"
-	"github.com/nuntiodev/go-hera/nuntio_options"
+	"github.com/nuntiodev/hera-proto/go_hera"
 )
 
 type DeleteUserRequest struct {
-	// external required fields
-	findOptions *nuntio_options.FindOptions
-	// internal required fields
-	namespace  string
-	userClient go_hera.UserServiceClient
-	authorize  nuntio_authorize.Authorize
+	findOptions *hera_options.FindOptions
+	namespace   string
+	client      go_hera.ServiceClient
+	authorize   nuntio_authorize.Authorize
 }
 
 func (r *DeleteUserRequest) Execute(ctx context.Context) error {
@@ -20,15 +19,18 @@ func (r *DeleteUserRequest) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	if r.findOptions == nil || r.findOptions.Validate() == false {
+	if r.findOptions == nil {
 		return invalidFindOptionsErr
+	} else if err := r.findOptions.Validate(); err != nil {
+		return err
 	}
 	deleteUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
+		Phone:    r.findOptions.Phone,
 	}
-	if _, err = r.userClient.Delete(ctx, &go_hera.UserRequest{
+	if _, err = r.client.DeleteUser(ctx, &go_hera.HeraRequest{
 		CloudToken: accessToken,
 		User:       deleteUser,
 		Namespace:  r.namespace,
@@ -38,11 +40,11 @@ func (r *DeleteUserRequest) Execute(ctx context.Context) error {
 	return nil
 }
 
-func (s *defaultSocialServiceClient) Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest {
+func (a *apiClient) DeleteUser(findOptions *hera_options.FindOptions) *DeleteUserRequest {
 	return &DeleteUserRequest{
 		findOptions: findOptions,
-		namespace:   s.namespace,
-		userClient:  s.userClient,
-		authorize:   s.authorize,
+		namespace:   a.namespace,
+		client:      a.client,
+		authorize:   a.authorize,
 	}
 }

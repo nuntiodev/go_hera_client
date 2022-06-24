@@ -1,15 +1,16 @@
-package user_block
+package api_client
 
 import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"github.com/nuntiodev/hera-proto/go_hera"
 )
 
 // ValidateToken locally validates the JWT and returns a user with the corresponding user id
-func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_hera.User, error) {
+func (a *apiClient) ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_hera.User, error) {
 	if forceValidateServerSide {
-		resp, err := s.userClient.ValidateToken(ctx, &go_hera.UserRequest{
+		resp, err := a.client.ValidateToken(ctx, &go_hera.HeraRequest{
 			TokenPointer: jwtToken,
 		})
 		if err != nil {
@@ -20,7 +21,7 @@ func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken
 		if jwtToken == "" {
 			return nil, tokenIsEmptyErr
 		}
-		jwtPublicKey, err := s.getPublicKey()
+		jwtPublicKey, err := a.getPublicKey()
 		if err != nil {
 			return nil, err
 		}

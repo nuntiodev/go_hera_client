@@ -1,20 +1,18 @@
-package user_block
+package api_client
 
 import (
 	"context"
+	"github.com/nuntiodev/go-hera/hera_options"
 	"github.com/nuntiodev/go-hera/nuntio_authorize"
-	"github.com/nuntiodev/go-hera/nuntio_options"
+	"github.com/nuntiodev/hera-proto/go_hera"
 )
 
 type LoginUserRequest struct {
-	// external required fields
-	findOptions *nuntio_options.FindOptions
-	// external optional fields
-	password string
-	// internal required fields
-	namespace  string
-	userClient go_hera.UserServiceClient
-	authorize  nuntio_authorize.Authorize
+	findOptions *hera_options.FindOptions
+	password    string
+	namespace   string
+	client      go_hera.ServiceClient
+	authorize   nuntio_authorize.Authorize
 }
 
 func (r *LoginUserRequest) SetPassword(password string) *LoginUserRequest {
@@ -27,16 +25,19 @@ func (r *LoginUserRequest) Execute(ctx context.Context) (*go_hera.Token, error) 
 	if err != nil {
 		return nil, err
 	}
-	if r.findOptions == nil || r.findOptions.Validate() == false {
+	if r.findOptions == nil {
 		return nil, invalidFindOptionsErr
+	} else if err := r.findOptions.Validate(); err != nil {
+		return nil, err
 	}
 	validateUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
+		Phone:    r.findOptions.Phone,
 		Password: r.password,
 	}
-	resp, err := r.userClient.Login(ctx, &go_hera.UserRequest{
+	resp, err := r.client.Login(ctx, &go_hera.HeraRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
 		Namespace:  r.namespace,
@@ -50,11 +51,11 @@ func (r *LoginUserRequest) Execute(ctx context.Context) (*go_hera.Token, error) 
 	return resp.Token, nil
 }
 
-func (s *defaultSocialServiceClient) Login(findOptions *nuntio_options.FindOptions) *LoginUserRequest {
+func (a *apiClient) Login(findOptions *hera_options.FindOptions) *LoginUserRequest {
 	return &LoginUserRequest{
 		findOptions: findOptions,
-		namespace:   s.namespace,
-		userClient:  s.userClient,
-		authorize:   s.authorize,
+		namespace:   a.namespace,
+		client:      a.client,
+		authorize:   a.authorize,
 	}
 }
