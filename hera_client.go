@@ -26,11 +26,7 @@ var (
 	EmptyApiKeyErr = errors.New("api key is empty")
 )
 
-type ApiClient struct {
-	UserBlock api_client.ApiClient
-}
-
-func NewApiClient(url string) (*ApiClient, error) {
+func NewApiClient(url string) (api_client.ApiClient, error) {
 	credentialsGenerator, err := nuntio_credentials.New(CREDENTIALS, url)
 	if err != nil {
 		return nil, err
@@ -44,11 +40,9 @@ func NewApiClient(url string) (*ApiClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	userBlock, err := api_client.NewApiClient(url, auth, NAMESPACE, dialOptions)
+	heraClient, err := api_client.NewApiClient(url, auth, NAMESPACE, dialOptions)
 	if err != nil {
 		return nil, err
 	}
-	return &ApiClient{
-		UserBlock: userBlock,
-	}, nil
+	return heraClient, nil
 }
