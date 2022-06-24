@@ -2,9 +2,9 @@ package hera_client
 
 import (
 	"errors"
-	"github.com/nuntiodev/go-hera/api_client"
-	"github.com/nuntiodev/go-hera/nuntio_authorize"
-	"github.com/nuntiodev/go-hera/nuntio_credentials"
+	"github.com/nuntiodev/go_hera/api_client"
+	"github.com/nuntiodev/go_hera/nuntio_authorize"
+	"github.com/nuntiodev/go_hera/nuntio_credentials"
 	"google.golang.org/grpc"
 )
 

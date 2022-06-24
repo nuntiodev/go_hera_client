@@ -3,8 +3,8 @@ package api_client
 import (
 	"context"
 	"encoding/json"
-	"github.com/nuntiodev/go-hera/hera_options"
-	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go_hera/hera_options"
+	"github.com/nuntiodev/go_hera/nuntio_authorize"
 	"github.com/nuntiodev/hera-proto/go_hera"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

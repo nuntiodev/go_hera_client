@@ -7,8 +7,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nuntiodev/go-hera/hera_options"
-	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go_hera/hera_options"
+	"github.com/nuntiodev/go_hera/nuntio_authorize"
 	"google.golang.org/grpc"
 )
 
