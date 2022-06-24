@@ -1,2 +1,2 @@
 # go-hera
-A Golang SDK for Nuntio Block APIs. Goto our [docs](https://docs.nuntio.io) to read more.
+A Golang SDK for Hera. Goto our [docs](https://docs.nuntio.io) to read more.
