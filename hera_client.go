@@ -1,4 +1,4 @@
-package nuntio
+package hera_client
 
 import (
 	"errors"
