@@ -2,14 +2,13 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
 )
 
 type PublicKeysUserRequest struct {
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
@@ -18,7 +17,7 @@ func (r *PublicKeysUserRequest) Execute(ctx context.Context) (*map[string]string
 	if err != nil {
 		return nil, err
 	}
-	resp, err := r.userClient.PublicKeys(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.PublicKeys(ctx, &go_hera.UserRequest{
 		CloudToken: accessToken,
 		Namespace:  r.namespace,
 	})

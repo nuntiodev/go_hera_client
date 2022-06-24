@@ -3,9 +3,8 @@ package user_block
 import (
 	"context"
 	"github.com/badoux/checkmail"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type UpdateEmailUserRequest struct {
@@ -15,11 +14,11 @@ type UpdateEmailUserRequest struct {
 	// internal required fields
 	encryptionKey string
 	namespace     string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -30,15 +29,15 @@ func (r *UpdateEmailUserRequest) Execute(ctx context.Context) (*go_block.User, e
 	if err := checkmail.ValidateFormat(r.email); err != nil && r.email != "" {
 		return nil, err
 	}
-	findUser := &go_block.User{
+	findUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 	}
-	updateUser := &go_block.User{
+	updateUser := &go_hera.User{
 		Email: r.email,
 	}
-	userResp, err := r.userClient.UpdateEmail(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.UpdateEmail(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,

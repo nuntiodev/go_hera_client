@@ -1,11 +1,12 @@
-module github.com/nuntiodev/go-blocks
+module github.com/nuntiodev/go-hera
 
 go 1.18
 
 require (
 	github.com/badoux/checkmail v1.2.1
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/nuntiodev/block-proto v0.2.71
+	github.com/nuntiodev/hera-proto v0.2.84
+		github.com/nuntiodev/x v0.2.40
 	github.com/nuntiodev/cloud-proto v0.1.37
 	google.golang.org/grpc v1.44.0
 )

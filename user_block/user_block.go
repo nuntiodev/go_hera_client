@@ -6,9 +6,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 	"google.golang.org/grpc"
 )
 
@@ -38,14 +37,14 @@ type UserBlock interface {
 	Login(findOptions *nuntio_options.FindOptions) *LoginUserRequest
 	PublicKeys() *PublicKeysUserRequest
 	RefreshToken(refreshToken string) *RefreshTokenUserRequest
-	ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_block.User, error)
+	ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_hera.User, error)
 	BlockToken(token string) *BlockTokenUserRequest
 	Delete(findOptions *nuntio_options.FindOptions) *DeleteUserRequest
 	DeleteAll() *DeleteAllUserRequest
 }
 
 type defaultSocialServiceClient struct {
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 	publicKey     *PublicKey
 	namespace     string
@@ -65,7 +64,7 @@ func (c *defaultSocialServiceClient) getPublicKey() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	publicKeyResp, err := c.userClient.PublicKeys(context.Background(), &go_block.UserRequest{
+	publicKeyResp, err := c.userClient.PublicKeys(context.Background(), &go_hera.UserRequest{
 		CloudToken: accessToken,
 	})
 	if err != nil {
@@ -86,7 +85,7 @@ func New(apiUrl string, authorize nuntio_authorize.Authorize, encryptionKey, nam
 	if err != nil {
 		return nil, err
 	}
-	userClient := go_block.NewUserServiceClient(userClientConn)
+	userClient := go_hera.NewUserServiceClient(userClientConn)
 	return &defaultSocialServiceClient{
 		encryptionKey: encryptionKey,
 		userClient:    userClient,

@@ -2,9 +2,8 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type DeleteUserRequest struct {
@@ -12,7 +11,7 @@ type DeleteUserRequest struct {
 	findOptions *nuntio_options.FindOptions
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
@@ -24,12 +23,12 @@ func (r *DeleteUserRequest) Execute(ctx context.Context) error {
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return invalidFindOptionsErr
 	}
-	deleteUser := &go_block.User{
+	deleteUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 	}
-	if _, err = r.userClient.Delete(ctx, &go_block.UserRequest{
+	if _, err = r.userClient.Delete(ctx, &go_hera.UserRequest{
 		CloudToken: accessToken,
 		User:       deleteUser,
 		Namespace:  r.namespace,

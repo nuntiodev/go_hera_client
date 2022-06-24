@@ -5,9 +5,9 @@ import (
 	"encoding/hex"
 	"errors"
 	"fmt"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_credentials"
-	"github.com/nuntiodev/go-blocks/user_block"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_credentials"
+	"github.com/nuntiodev/go-hera/user_block"
 	"google.golang.org/grpc"
 )
 

@@ -2,24 +2,23 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
 )
 
 type GetAllUserRequest struct {
 	// internal required fields
 	namespace     string
 	encryptionKey string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *GetAllUserRequest) Execute(ctx context.Context) ([]*go_block.User, error) {
+func (r *GetAllUserRequest) Execute(ctx context.Context) ([]*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	userResp, err := r.userClient.GetAll(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.GetAll(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		Namespace:     r.namespace,

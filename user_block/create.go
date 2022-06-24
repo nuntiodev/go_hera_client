@@ -3,9 +3,8 @@ package user_block
 import (
 	"context"
 	"encoding/json"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type CreateUserRequest struct {
@@ -17,7 +16,7 @@ type CreateUserRequest struct {
 	// internal required fields
 	encryptionKey string
 	namespace     string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
@@ -49,12 +48,12 @@ func (r *CreateUserRequest) SetValidatePassword(validatePassword bool) *CreateUs
 	return r
 }
 
-func (r *CreateUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *CreateUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	createUser := &go_block.User{
+	createUser := &go_hera.User{
 		Password: r.password,
 	}
 	if r.userOptions != nil {
@@ -70,7 +69,7 @@ func (r *CreateUserRequest) Execute(ctx context.Context) (*go_block.User, error)
 		}
 		createUser.Metadata = string(jsonMetadata)
 	}
-	userResp, err := r.userClient.Create(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.Create(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		User:          createUser,

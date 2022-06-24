@@ -2,8 +2,7 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
 )
 
 type BlockTokenUserRequest struct {
@@ -11,7 +10,7 @@ type BlockTokenUserRequest struct {
 	token string
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
@@ -23,7 +22,7 @@ func (r *BlockTokenUserRequest) Execute(ctx context.Context) error {
 	if r.token == "" {
 		return tokenIsEmptyErr
 	}
-	resp, err := r.userClient.BlockToken(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.BlockToken(ctx, &go_hera.UserRequest{
 		CloudToken:   accessToken,
 		Namespace:    r.namespace,
 		TokenPointer: r.token,

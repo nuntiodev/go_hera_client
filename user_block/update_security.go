@@ -3,9 +3,8 @@ package user_block
 import (
 	"context"
 	"errors"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type UpdateSecurityUserRequest struct {
@@ -14,11 +13,11 @@ type UpdateSecurityUserRequest struct {
 	// internal required fields
 	encryptionKey string
 	namespace     string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	if r.encryptionKey == "" {
 		return nil, errors.New("missing required encryption key used to update security")
 	}
@@ -29,13 +28,13 @@ func (r *UpdateSecurityUserRequest) Execute(ctx context.Context) (*go_block.User
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	findUser := &go_block.User{
+	findUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 	}
-	updateUser := &go_block.User{}
-	userResp, err := r.userClient.UpdateSecurity(ctx, &go_block.UserRequest{
+	updateUser := &go_hera.User{}
+	userResp, err := r.userClient.UpdateSecurity(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,

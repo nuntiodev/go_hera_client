@@ -2,8 +2,7 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
 )
 
 type RefreshTokenUserRequest struct {
@@ -11,11 +10,11 @@ type RefreshTokenUserRequest struct {
 	refreshToken string
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
-func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_block.Token, error) {
+func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_hera.Token, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -23,9 +22,9 @@ func (r *RefreshTokenUserRequest) Execute(ctx context.Context) (*go_block.Token,
 	if r.refreshToken == "" {
 		return nil, tokenIsEmptyErr
 	}
-	resp, err := r.userClient.RefreshToken(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.RefreshToken(ctx, &go_hera.UserRequest{
 		CloudToken: accessToken,
-		Token: &go_block.Token{
+		Token: &go_hera.Token{
 			RefreshToken: r.refreshToken,
 		},
 		Namespace: r.namespace,

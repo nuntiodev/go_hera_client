@@ -2,9 +2,8 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type LoginUserRequest struct {
@@ -14,7 +13,7 @@ type LoginUserRequest struct {
 	password string
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
@@ -23,7 +22,7 @@ func (r *LoginUserRequest) SetPassword(password string) *LoginUserRequest {
 	return r
 }
 
-func (r *LoginUserRequest) Execute(ctx context.Context) (*go_block.Token, error) {
+func (r *LoginUserRequest) Execute(ctx context.Context) (*go_hera.Token, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -31,13 +30,13 @@ func (r *LoginUserRequest) Execute(ctx context.Context) (*go_block.Token, error)
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	validateUser := &go_block.User{
+	validateUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 		Password: r.password,
 	}
-	resp, err := r.userClient.Login(ctx, &go_block.UserRequest{
+	resp, err := r.userClient.Login(ctx, &go_hera.UserRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
 		Namespace:  r.namespace,

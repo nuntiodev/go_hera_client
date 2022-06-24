@@ -2,9 +2,8 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type GetUserRequest struct {
@@ -13,11 +12,11 @@ type GetUserRequest struct {
 	// internal required fields
 	namespace     string
 	encryptionKey string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
-func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *GetUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -25,12 +24,12 @@ func (r *GetUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	getUser := &go_block.User{
+	getUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 	}
-	userResp, err := r.userClient.Get(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.Get(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		User:          getUser,

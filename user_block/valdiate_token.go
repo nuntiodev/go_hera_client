@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"github.com/golang-jwt/jwt"
-	"github.com/nuntiodev/block-proto/go_block"
 )
 
 // ValidateToken locally validates the JWT and returns a user with the corresponding user id
-func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_block.User, error) {
+func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken string, forceValidateServerSide bool) (*go_hera.User, error) {
 	if forceValidateServerSide {
-		resp, err := s.userClient.ValidateToken(ctx, &go_block.UserRequest{
+		resp, err := s.userClient.ValidateToken(ctx, &go_hera.UserRequest{
 			TokenPointer: jwtToken,
 		})
 		if err != nil {
@@ -31,7 +30,7 @@ func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken
 		}
 		token, err := jwt.ParseWithClaims(
 			jwtToken,
-			&go_block.CustomClaims{},
+			&go_hera.CustomClaims{},
 			func(token *jwt.Token) (interface{}, error) {
 				return key, nil
 			},
@@ -42,14 +41,14 @@ func (s *defaultSocialServiceClient) ValidateToken(ctx context.Context, jwtToken
 		if token.Valid == false {
 			return nil, errors.New("token is not valid")
 		}
-		claims, ok := token.Claims.(*go_block.CustomClaims)
+		claims, ok := token.Claims.(*go_hera.CustomClaims)
 		if !ok {
 			return nil, errors.New("couldn't parse claims")
 		}
 		if err != nil {
 			return nil, err
 		}
-		return &go_block.User{
+		return &go_hera.User{
 			Id: claims.UserId,
 		}, nil
 	}

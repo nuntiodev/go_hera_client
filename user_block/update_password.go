@@ -2,9 +2,8 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
-	"github.com/nuntiodev/go-blocks/nuntio_options"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_options"
 )
 
 type UpdatePasswordUserRequest struct {
@@ -16,7 +15,7 @@ type UpdatePasswordUserRequest struct {
 	// internal required fields
 	encryptionKey string
 	namespace     string
-	userClient    go_block.UserServiceClient
+	userClient    go_hera.UserServiceClient
 	authorize     nuntio_authorize.Authorize
 }
 
@@ -25,7 +24,7 @@ func (r *UpdatePasswordUserRequest) SetValidatePassword(validatePassword bool) *
 	return r
 }
 
-func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_block.User, error) {
+func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
 		return nil, err
@@ -33,15 +32,15 @@ func (r *UpdatePasswordUserRequest) Execute(ctx context.Context) (*go_block.User
 	if r.findOptions == nil || r.findOptions.Validate() == false {
 		return nil, invalidFindOptionsErr
 	}
-	findUser := &go_block.User{
+	findUser := &go_hera.User{
 		Email:    r.findOptions.Email,
 		Id:       r.findOptions.Id,
 		Username: r.findOptions.Username,
 	}
-	updateUser := &go_block.User{
+	updateUser := &go_hera.User{
 		Password: r.password,
 	}
-	userResp, err := r.userClient.UpdatePassword(ctx, &go_block.UserRequest{
+	userResp, err := r.userClient.UpdatePassword(ctx, &go_hera.UserRequest{
 		CloudToken:    accessToken,
 		EncryptionKey: r.encryptionKey,
 		Update:        updateUser,

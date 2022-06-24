@@ -2,14 +2,13 @@ package user_block
 
 import (
 	"context"
-	"github.com/nuntiodev/block-proto/go_block"
-	"github.com/nuntiodev/go-blocks/nuntio_authorize"
+	"github.com/nuntiodev/go-hera/nuntio_authorize"
 )
 
 type DeleteAllUserRequest struct {
 	// internal required fields
 	namespace  string
-	userClient go_block.UserServiceClient
+	userClient go_hera.UserServiceClient
 	authorize  nuntio_authorize.Authorize
 }
 
@@ -18,7 +17,7 @@ func (r *DeleteAllUserRequest) Execute(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	_, err = r.userClient.DeleteNamespace(ctx, &go_block.UserRequest{
+	_, err = r.userClient.DeleteNamespace(ctx, &go_hera.UserRequest{
 		CloudToken: accessToken,
 		Namespace:  r.namespace,
 	})
