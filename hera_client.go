@@ -1,4 +1,4 @@
-package hera_client
+package go_hera_client
 
 import (
 	"errors"
