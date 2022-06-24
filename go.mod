@@ -1,4 +1,4 @@
-module github.com/nuntiodev/go_hera
+module github.com/nuntiodev/go_hera_client
 
 go 1.18
 
