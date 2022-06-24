@@ -15,15 +15,15 @@ type ValidateCredentialsUserRequest struct {
 	authorize   nuntio_authorize.Authorize
 }
 
-func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) error {
+func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) (*go_hera.User, error) {
 	accessToken, err := r.authorize.GetAccessToken(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	if r.findOptions == nil {
-		return invalidFindOptionsErr
+		return nil, invalidFindOptionsErr
 	} else if err := r.findOptions.Validate(); err != nil {
-		return err
+		return nil, err
 	}
 	validateUser := &go_hera.User{
 		Email:    r.findOptions.Email,
@@ -32,14 +32,18 @@ func (r *ValidateCredentialsUserRequest) Execute(ctx context.Context) error {
 		Password: r.password,
 		Phone:    r.findOptions.Phone,
 	}
-	if _, err := r.client.ValidateCredentials(ctx, &go_hera.HeraRequest{
+	resp, err := r.client.ValidateCredentials(ctx, &go_hera.HeraRequest{
 		CloudToken: accessToken,
 		User:       validateUser,
 		Namespace:  r.namespace,
-	}); err != nil {
-		return err
+	})
+	if err != nil {
+		return nil, err
 	}
-	return nil
+	if resp == nil || resp.User == nil {
+		return nil, internalServerError
+	}
+	return resp.User, nil
 }
 
 func (a *apiClient) ValidateCredentials(findOptions *hera_options.FindOptions, password string) *ValidateCredentialsUserRequest {
